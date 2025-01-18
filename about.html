@@ -7,14 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <h1>Idan's Studio</h1>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="apps.html">Apps</a></li>
-            <li><a href="about.html">About</a></li>
-        </ul>
-    </nav>
+    <div id="header-placeholder"></div>
 
     <main class="about-page">
         <h2>About Us</h2>
@@ -24,5 +17,13 @@
     <footer class="footer">
         <p>© 2025 Idan's Studio. All Rights Reserved.</p>
     </footer>
+    <script>
+        // Load the header
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
 </body>
 </html>
