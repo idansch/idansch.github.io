@@ -212,3 +212,27 @@ body {
     pointer-events: none;
     text-decoration: none;
 }
+
+/* Story Section */
+.story-section {
+    margin: 2rem 0;
+}
+
+.story-collapse {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.story-collapse summary {
+    font-weight: 600;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #fff;
+    outline: none;
+}
+
+.story-collapse p {
+    margin-top: 0.5rem;
+    color: #fff;
+}
