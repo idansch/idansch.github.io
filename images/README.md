@@ -8,3 +8,5 @@ Required files:
 Recommended specs:
 - PNG format, square aspect ratio (1:1)
 - Size around 1024×1024 px for best quality
+- Place each image directly in this directory so they can be referenced as `images/APP-logo.png` from the HTML pages.
+- When displayed, the icons will appear with iOS-style rounded corners and a subtle shadow.
