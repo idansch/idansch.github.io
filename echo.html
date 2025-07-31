@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo - IYS Apps</title>
+    <meta name="description" content="Echo rhythm game by IYS Apps.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #ef476f;
+            --secondary-color: #d62839;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="app-detail container">
+        <h2>Echo</h2>
+        <img src="images/echo-logo.png" alt="Echo logo" class="app-logo">
+        <p>Challenge your rhythm with this sound-based game. Play, learn, and compete!</p>
+        <audio controls autoplay loop src="audio/echo-theme.mp3"></audio>
+        <p>
+            <a href="https://apps.apple.com/us/app/echobeats/id6477832538" target="_blank" class="cta-button">View on App Store</a>
+        </p>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 IYS Apps. All Rights Reserved.</p>
+    </footer>
+    <script>
+        // Load the header
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
+</body>
+</html>
