@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bacchus - EchoBeats App Studio</title>
+    <meta name="description" content="Bacchus wine journal app by EchoBeats App Studio.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #7b4b94;
+            --secondary-color: #4a235a;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="app-detail container">
+        <h2>Bacchus</h2>
+        <img src="images/bacchus-logo.png" alt="Bacchus logo" class="app-logo">
+        <p>A modern wine journal for enthusiasts. Save, rank, and explore wines with AI.</p>
+        <audio controls autoplay loop src="audio/bacchus-theme.mp3"></audio>
+        <p>
+            <a href="#" class="cta-button disabled-link">Coming soon!</a>
+        </p>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 EchoBeats app Studio. All Rights Reserved.</p>
+    </footer>
+    <script>
+        // Load the header
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
+</body>
+</html>

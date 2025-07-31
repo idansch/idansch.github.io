@@ -1,4 +1,6 @@
-/* General Reset */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Color Palette */
 :root {
     --primary-color: #4a90e2;
     --secondary-color: #2c3e50;
@@ -6,31 +8,79 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    background-color: #fafafa;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem;
 }
 
 /* Navbar */
 .navbar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     background-color: var(--primary-color);
-    color: white;
-    padding: 10px 20px;
+    color: #fff;
+    padding: 1rem;
 }
 
-.navbar ul {
+.navbar .logo a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.25rem;
+}
+
+.nav-links {
     list-style: none;
     display: flex;
-    gap: 15px;
+    gap: 1rem;
     margin: 0;
 }
 
-.navbar a {
-    color: white;
-    text-decoration: none;
+.dropdown {
+    position: relative;
 }
 
-.navbar a:hover {
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--secondary-color);
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+    min-width: 160px;
+    z-index: 1000;
+}
+
+.dropdown-content li a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.dropdown-content li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
     text-decoration: underline;
 }
 
@@ -38,77 +88,88 @@ body {
 .hero {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    height: 83vh;
-    background-color: #f0f0f0;
-    padding: 20px;
-    box-sizing: border-box;
+    height: 70vh;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    text-align: center;
 }
 
-.hero-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
 }
 
 .cta-button {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
+    padding: 0.75rem 1.5rem;
+    background-color: #fff;
+    color: var(--secondary-color);
     text-decoration: none;
     border-radius: 5px;
-    margin-top: 20px;
+    font-weight: 600;
 }
 
 .cta-button:hover {
-    background-color: #0056b3;
+    background-color: #f1f1f1;
 }
 
 /* Pages */
 .apps-page, .about-page {
-    padding: 20px;
+    padding: 2rem;
 }
 
 .app {
-    margin: 20px 0;
+    margin-bottom: 2rem;
 }
 
 .app-link {
-    color: #007BFF;
+    color: var(--primary-color);
     text-decoration: none;
+    font-weight: 600;
 }
 
 .app-link:hover {
     text-decoration: underline;
 }
 
+/* App detail pages */
+.app-detail {
+    text-align: center;
+}
+
+.app-logo {
+    max-width: 200px;
+    margin: 1rem 0;
+}
+
 /* Footer */
 .footer {
     text-align: center;
-    padding: 20px;
-    background-color: #333;
-    color: white;
-    /* margin-top: 20px; */
+    padding: 1rem;
+    background-color: var(--secondary-color);
+    color: #fff;
 }
 
 /* Support Button */
 .support-button {
-    background-color: #007BFF;
-    color: white;
+    background-color: #fff;
+    color: var(--secondary-color);
     border: none;
-    padding: 10px 20px;
+    padding: 0.75rem 1.5rem;
     border-radius: 5px;
     cursor: pointer;
-    align-self: center;
-    margin-top: auto;
+    font-weight: 600;
 }
 
 .support-button:hover {
-    background-color: #0056b3;
+    background-color: #e6e6e6;
 }
 
 .disabled-link {
