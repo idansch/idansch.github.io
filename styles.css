@@ -30,6 +30,8 @@ body {
     background-color: var(--primary-color);
     color: #fff;
     padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .navbar .logo a {
@@ -145,6 +147,7 @@ body {
 /* App detail pages */
 .app-detail {
     text-align: center;
+    color: #fff;
 }
 
 .app-logo {
@@ -159,6 +162,8 @@ body {
     background-color: var(--secondary-color);
     color: #fff;
     margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Support Button */
