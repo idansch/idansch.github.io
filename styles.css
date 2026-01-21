@@ -248,3 +248,55 @@ body {
     max-height: 200px;
     opacity: 1;
 }
+
+/* Invite / Universal Link page */
+.invite-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #fff;
+}
+
+.invite-text {
+    margin-top: 0;
+}
+
+.invite-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.invite-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    padding: 0.5rem 0.75rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.secondary-button {
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.secondary-button:hover {
+    background-color: #f1f1f1;
+}
+
+.download-section {
+    margin-top: 2.5rem;
+}
+
+.copy-status {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #fff;
+}
