@@ -14,8 +14,6 @@
     </style>
 </head>
 <body>
-    <!-- <div id="header-placeholder"></div> -->
-
     <main class="app-detail container">
         <h2>Echo</h2>
         <img src="../images/echo-logo.png" alt="Echo logo" class="app-logo">
@@ -23,7 +21,7 @@
 
         <section id="invite-section" class="invite-section" style="display: none;">
             <p class="invite-text">
-                You’ve opened an Echo invite link. Use the button below to copy your invite code:
+                You’ve opened an Echo match invite link.\nUse the button below to copy your invite code:
             </p>
             <div class="invite-actions">
                 <span id="invite-code" class="invite-code"></span>
@@ -34,7 +32,7 @@
 
         <section class="download-section">
             <button id="download-echo-button" class="cta-button">
-                Download Echo on the App Store
+                Download Echo
             </button>
         </section>
     </main>
@@ -44,16 +42,6 @@
     </footer>
 
     <script>
-        // Load the shared header
-        // fetch('../header.html')
-        //     .then(response => response.text())
-        //     .then(data => {
-        //         document.getElementById('header-placeholder').innerHTML = data;
-        //     })
-        //     .catch(() => {
-        //         // Header is non-critical for this flow; fail silently.
-        //     });
-
         function getInviteCodeFromUrl() {
             try {
                 const url = new URL(window.location.href);
