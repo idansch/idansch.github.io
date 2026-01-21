@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "XJ6U7A87D3.idan.schechter.EchoBeat",
+        "components": [
+          {
+            "/": "/vs/*",
+            "comment": "Echo versus match invites"
+          },
+          {
+            "/": "/app/*",
+            "comment": "Generic app routes"
+          }
+        ]
+      }
+    ]
+  }
+}
