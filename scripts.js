@@ -1,3 +1,3 @@
 function sendSupportEmail() {
-    window.location.href = "mailto:echobeat@icloud.com";
+    window.location.href = "mailto:support@isapps.app";
 }
