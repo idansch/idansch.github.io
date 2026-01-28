@@ -21,9 +21,9 @@
 
         <section id="invite-section" class="invite-section" style="display: none;">
             <p class="invite-text">
-                You’ve opened an Echo match invite 🤩
-                After you download Echo, accept the invite from here
-                Or copy the invite code and join them manually in Echo
+                You’ve opened an Echo match invite 🤩<br><br>
+                After you download Echo, accept the invite from here ⬇<br>
+                Or copy the invite code and join your friend manually in Echo 
             </p>
             <div class="invite-actions">
                 <span id="invite-code" class="invite-code"></span>
@@ -109,7 +109,13 @@
 
 
             openEchoButton.addEventListener('click', () => {
-                window.location.href = ('https://isapps.app/vs/' + inviteCode);
+                // Try custom scheme
+                window.location.href = 'echo://invite/' + inviteCode;
+
+                // Fallback to universal link after short delay
+                setTimeout(() => {
+                    window.location.href = 'https://isapps.app/open/' + inviteCode;
+                }, 300);
             });
         }
 
