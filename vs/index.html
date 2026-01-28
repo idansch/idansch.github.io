@@ -21,11 +21,14 @@
 
         <section id="invite-section" class="invite-section" style="display: none;">
             <p class="invite-text">
-                You’ve opened an Echo match invite link.\nUse the button below to copy your invite code:
+                You’ve opened an Echo match invite 🤩
+                After you download Echo, accept the invite from here
+                Or copy the invite code and join them manually in Echo
             </p>
             <div class="invite-actions">
                 <span id="invite-code" class="invite-code"></span>
                 <button id="copy-invite-button" class="secondary-button">Copy invite code</button>
+                <button id="open-echo-button" class="secondary-button">Try Accepting Invite</button>
             </div>
             <p id="copy-status" class="copy-status" aria-live="polite"></p>
         </section>
@@ -73,6 +76,7 @@
             const copyButton = document.getElementById('copy-invite-button');
             const copyStatus = document.getElementById('copy-status');
             const downloadButton = document.getElementById('download-echo-button');
+            const openEchoButton = document.getElementById('open-echo-button');
 
             if (inviteCode) {
                 inviteCodeSpan.textContent = inviteCode;
@@ -101,6 +105,11 @@
 
             downloadButton.addEventListener('click', () => {
                 window.location.href = 'https://apps.apple.com/us/app/echobeats/id6477832538';
+            });
+
+
+            openEchoButton.addEventListener('click', () => {
+                window.location.href = ('https://isapps.app/vs/' + inviteCode);
             });
         }
 
