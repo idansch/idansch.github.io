@@ -58,12 +58,12 @@
         // we want /myproject/index.html as the home.
         const projectBaseParts = pathParts.slice(0, -1); // drop "404.html"
         const basePath = "/" + projectBaseParts.join("/");
-        const homePath = (basePath === "/" ? "" : basePath) + "/index.html";
+        // const homePath = (basePath === "/" ? "" : basePath) + "/index.html";
 
         const button = document.getElementById("go-home-button");
         if (button) {
           button.addEventListener("click", function () {
-            window.location.href = homePath;
+            window.location.href = basePath;
           });
         }
       })();
