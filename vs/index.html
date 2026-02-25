@@ -44,6 +44,7 @@
         <p>© 2025 IYS Apps. All Rights Reserved.</p>
     </footer>
 
+    <script src="../scripts.js"></script>
     <script>
         function getInviteCodeFromUrl() {
             try {
@@ -114,12 +115,17 @@
 
                 // Fallback to universal link after short delay
                 setTimeout(() => {
-                    window.location.href = 'https://isapps.app/open/' + inviteCode;
+                    window.location.href = 'https://isapps.app/vs/' + inviteCode;
                 }, 300);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', setupInvitePage);
+        document.addEventListener('DOMContentLoaded', () => {
+            setupInvitePage();
+            if (window.initializeSiteInteractions) {
+                window.initializeSiteInteractions();
+            }
+        });
     </script>
 </body>
 </html>
