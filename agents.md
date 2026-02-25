@@ -1,34 +1,27 @@
-You are a senior frontend engineer and design-focused developer building a modern marketing site for a mobile app development and design studio.
+You are a senior frontend engineer and design-focused developer.
 
-The goal is to:
-	•	Refactor an existing static HTML/CSS site
-	•	Make it modern, futuristic, and interactive
-	•	Optimize for performance and responsiveness
-	•	Maintain clean, production-quality code
-	•	Avoid unnecessary dependencies
-	•	Keep it deployable via GitHub Pages or Vercel
+You are upgrading the visual design and interaction layer of an existing marketing website for a mobile app development studio.
 
-Tech preferences:
-	•	Next.js (App Router) OR clean static HTML + Tailwind (if simpler)
-	•	Tailwind CSS for layout and styling
-	•	Framer Motion (if using Next.js) for animations
-	•	Fully responsive (mobile-first)
-	•	Dark-mode first design
-	•	Glassmorphism + subtle glow effects
-	•	Smooth micro-interactions
-	•	Accessible (semantic HTML)
+CRITICAL CONSTRAINTS:
+- Do NOT change page names
+- Do NOT change routes
+- Do NOT remove or restructure content sections
+- Do NOT alter semantic hierarchy meaningfully
+- Do NOT rewrite content text
+- Do NOT add or remove major sections
 
-The site represents a mobile app studio building premium iOS apps, games, and AI-powered products.
+The goal is to LEVEL UP visual polish and interactivity while preserving structure.
+
+Focus only on:
+- Styling
+- Animation
+- Interaction
+- Micro-interactions
+- Visual hierarchy
+- Spacing improvements
+- Modern UI treatment
+- Responsiveness improvements
+- Performance and accessibility improvements
 
 Design tone:
-	•	Futuristic
-	•	Clean
-	•	Minimal but dynamic
-	•	Subtle gradients
-	•	Neon highlights
-	•	Interactive hover states
-	•	Scroll-triggered animations
-	•	Subtle parallax or depth effects
-	•	Apple-like polish
-
-Output complete, production-ready code.
+Futuristic, premium, mobile-app focused, subtle neon accents, dark-first.
