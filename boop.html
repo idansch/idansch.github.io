@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boop - IYS Apps</title>
+    <meta name="description" content="Boop social app by IYS Apps.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #F48C06;
+            --secondary-color: #A65502;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="app-detail container">
+        <h2>Boop</h2>
+        <img src="images/boop-logo.png" alt="Boop logo" class="app-logo">
+        <p>Boop is a lightweight, joyful social app that gives you one quirky challenge each day. Respond with a photo, doodle, or video, then see what others created.</p>
+
+        <h3 class="section-title">Daily Challenge Examples</h3>
+        <ul>
+            <li>“Take a photo of something heart-shaped”</li>
+            <li>“Draw a speedy self portait in 30 seconds or less”</li>
+            <li>“Make your dog look like a celebrity 🥸”</li>
+        </ul>
+
+        <p>With leaderboards, streaks and rewards, Boop turns tiny moments into a delightful daily ritual. It’s playful and weird in the best way.</p>
+
+        <h3 class="section-title">User Reviews</h3>
+        <ul>
+            <li>“Boop’s challenges are the perfect dose of joy. My friends and I laugh every day!” MRJason222</li>
+            <li>“Lighthearted but never fake. Keeps me exploring my creativity indoors and outdoors.” Noa.B.</li>
+            <li>“I love that it only takes a minute yet still feels so social.” Emily</li>
+        </ul>
+        <p>Join the beta and start booping!</p>
+        <p>
+            <a href="https://testflight.apple.com/join/3g3XRJJa" target="_blank" class="cta-button">Join TestFlight</a>
+        </p>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 IYS Apps. All Rights Reserved.</p>
+    </footer>
+    <script>
+        // Load the header
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
+</body>
+</html>
