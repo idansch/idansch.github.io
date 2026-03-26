@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shelter Time - IYS Apps</title>
+    <meta name="description" content="Track estimated shelter time today and in the last 24 hours based on your current location.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container shelter-page" id="shelter-app">
+        <section class="header shelter-hero">
+            <p class="shelter-kicker">Private Utility</p>
+            <h1>Shelter Time</h1>
+            <p class="shelter-subtitle">Estimate how much time you spent in shelter based on local alerts.</p>
+
+            <div class="shelter-actions">
+                <button id="locate-button" class="cta-button" type="button">Use Current Location</button>
+                <button id="refresh-button" class="secondary-button" type="button">Refresh Data</button>
+            </div>
+
+            <p id="shelter-status" class="shelter-status" role="status" aria-live="polite">Location not set yet.</p>
+            <p id="shelter-last-updated" class="shelter-last-updated">Last updated: --</p>
+        </section>
+
+        <section class="shelter-grid" aria-label="Shelter time metrics">
+            <article class="shelter-card">
+                <p class="shelter-label">Today (calendar)</p>
+                <p id="metric-today" class="shelter-value">--</p>
+                <p id="alerts-today" class="shelter-meta">-- alerts</p>
+            </article>
+            <article class="shelter-card">
+                <p class="shelter-label">Last 24 hours</p>
+                <p id="metric-24h" class="shelter-value">--</p>
+                <p id="alerts-24h" class="shelter-meta">-- alerts</p>
+            </article>
+        </section>
+
+        <section class="main-content shelter-details">
+            <h2>Location Match</h2>
+            <p id="location-match" class="shelter-meta">No location selected.</p>
+
+            <div class="manual-city-row">
+                <label for="manual-city">City Override (optional)</label>
+                <div class="manual-city-controls">
+                    <input id="manual-city" type="text" placeholder="e.g. תל אביב" autocomplete="off">
+                    <button id="apply-city-button" class="secondary-button" type="button">Apply City</button>
+                </div>
+            </div>
+
+            <details class="source-details">
+                <summary>Data Source (Advanced)</summary>
+                <p>Default source uses a public relay for browser CORS compatibility.</p>
+                <label for="source-endpoint">Feed endpoint URL</label>
+                <input id="source-endpoint" type="url" inputmode="url" spellcheck="false">
+                <div class="source-actions">
+                    <button id="save-source-button" class="secondary-button" type="button">Save Source</button>
+                    <button id="reset-source-button" class="secondary-button" type="button">Reset Default</button>
+                </div>
+            </details>
+
+            <h2>Recent Matching Alerts</h2>
+            <ul id="recent-alerts" class="shelter-alert-list">
+                <li class="shelter-empty">No matching alerts yet.</li>
+            </ul>
+
+            <p class="shelter-footnote">Estimate model: each matching alert contributes a 10-minute shelter window, merged when overlapping.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 IYS Apps. All Rights Reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                if (window.initializeSiteInteractions) {
+                    window.initializeSiteInteractions();
+                }
+            });
+    </script>
+</body>
+</html>
