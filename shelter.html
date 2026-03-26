@@ -21,6 +21,14 @@
                 <button id="refresh-button" class="secondary-button" type="button">Refresh Data</button>
             </div>
 
+            <div class="calc-mode-row">
+                <label class="calc-mode-label" for="estimate-only-checkbox">
+                    <input id="estimate-only-checkbox" type="checkbox">
+                    Estimate-only calculation
+                    <span class="calc-tooltip" tabindex="0" title="Default mode uses incident-end (release) messages when available for your area, and falls back to a fixed estimate only if no release message is found within 30 minutes. Estimate-only mode always uses fixed duration per alert.">?</span>
+                </label>
+            </div>
+
             <p id="shelter-status" class="shelter-status" role="status" aria-live="polite">Location not set yet.</p>
             <p id="shelter-last-updated" class="shelter-last-updated">Last updated: --</p>
         </section>
@@ -36,11 +44,17 @@
                 <p id="metric-24h" class="shelter-value">--</p>
                 <p id="alerts-24h" class="shelter-meta">-- alerts</p>
             </article>
+            <article class="shelter-card">
+                <p class="shelter-label">Average Visit Duration</p>
+                <p id="metric-avg-today" class="shelter-value">--</p>
+                <p id="metric-avg-24h" class="shelter-meta">Last 24h: --</p>
+            </article>
         </section>
 
         <section class="main-content shelter-details">
             <h2>Location Match</h2>
             <p id="location-match" class="shelter-meta">No location selected.</p>
+            <p id="resolved-city" class="shelter-meta">Data city: --</p>
 
             <div class="manual-city-row">
                 <label for="manual-city">City Override (optional)</label>
@@ -61,12 +75,12 @@
                 </div>
             </details>
 
-            <h2>Recent Matching Alerts</h2>
+            <h2>Recent Matching Visits</h2>
             <ul id="recent-alerts" class="shelter-alert-list">
-                <li class="shelter-empty">No matching alerts yet.</li>
+                <li class="shelter-empty">No matching shelter visits yet.</li>
             </ul>
 
-            <p class="shelter-footnote">Estimate model: each matching alert contributes a 10-minute shelter window, merged when overlapping.</p>
+            <p class="shelter-footnote">Default model: release messages define shelter end time. Fallback model: each matching alert contributes a 10-minute shelter window, merged when overlapping.</p>
         </section>
     </main>
 

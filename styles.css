@@ -627,6 +627,39 @@ a {
     margin-bottom: 0.9rem;
 }
 
+.calc-mode-row {
+    margin-bottom: 0.8rem;
+}
+
+.calc-mode-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #ecf2ff;
+}
+
+.calc-mode-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: color-mix(in srgb, var(--primary-color) 80%, #9dc4ff);
+}
+
+.calc-tooltip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: help;
+}
+
 .shelter-status,
 .shelter-last-updated {
     margin: 0.2rem 0;
@@ -641,7 +674,7 @@ a {
 .shelter-grid {
     display: grid;
     gap: var(--space-2);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .shelter-card {
@@ -735,6 +768,19 @@ a {
     border: 1px solid rgba(255, 255, 255, 0.11);
     background: rgba(1, 10, 23, 0.56);
     color: #f2f6ff;
+}
+
+.visit-source {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.4rem;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    line-height: 1.2;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f0f6ff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .shelter-alert-list .shelter-empty {
