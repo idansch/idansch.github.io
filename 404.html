@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Page not found</title>
+    <script>
+      (function () {
+        const path = window.location.pathname;
+
+        // Handle links like:
+        // - /vs/ABC123
+        // - /myproject/vs/ABC123
+        // - /myproject/subdir/vs/ABC123/extra
+        //
+        // We look for "/vs/" anywhere in the path, grab the next segment
+        // as the invite code, and redirect to the matching "/vs?code=..."
+        // at the same base path.
+        const vsIndex = path.indexOf("/vs/");
+
+        if (vsIndex !== -1) {
+          const afterVs = path.slice(vsIndex + 4); // characters after "/vs/"
+          const codeSegment = afterVs.split(/[\/?#]/)[0]; // up to next /, ? or #
+
+          if (codeSegment) {
+            const code = encodeURIComponent(codeSegment);
+            const baseVsPath = path.slice(0, vsIndex + 3); // includes "/vs"
+            const target = `${baseVsPath}?code=${code}${window.location.hash || ""}`;
+            window.location.replace(target);
+            return;
+          }
+        }
+
+        // fallback: stay on this 404 page and show a button
+      })();
+    </script>
+  </head>
+  <body>
+    <main style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Page not found</h1>
+      <p style="margin-bottom: 1.5rem; max-width: 480px;">
+        The link you followed doesn’t match any page. If you were opening an Echo invite, please try the link again. Otherwise, you can return to the home page.
+      </p>
+      <button
+        id="go-home-button"
+        style="padding: 0.75rem 1.5rem; border-radius: 999px; border: none; cursor: pointer; background: #6F00FF; color: white; font-size: 1rem; font-weight: 500; box-shadow: 0 6px 18px rgba(0,0,0,0.18);"
+      >
+        Go to home
+      </button>
+    </main>
+    <script>
+      (function () {
+        // Compute the "home" (index.html) relative to this 404 page,
+        // so it works both at the domain root and under a project path.
+        const loc = window.location;
+        const pathParts = loc.pathname.split("/").filter(Boolean);
+
+        // If this 404.html is served from e.g. /myproject/404.html,
+        // we want /myproject/index.html as the home.
+        const projectBaseParts = pathParts.slice(0, -1); // drop "404.html"
+        const basePath = "/" + projectBaseParts.join("/");
+        // const homePath = (basePath === "/" ? "" : basePath) + "/index.html";
+
+        const button = document.getElementById("go-home-button");
+        if (button) {
+          button.addEventListener("click", function () {
+            window.location.href = basePath;
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

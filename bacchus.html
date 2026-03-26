@@ -29,12 +29,15 @@
     <footer class="footer">
         <p>© 2025 IYS Apps. All Rights Reserved.</p>
     </footer>
+    <script src="scripts.js"></script>
     <script>
-        // Load the header
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
+                if (window.initializeSiteInteractions) {
+                    window.initializeSiteInteractions();
+                }
             });
     </script>
 </body>
