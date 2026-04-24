@@ -1,0 +1,202 @@
+{
+  "personaId": "eli",
+  "demographics": {
+    "age": 75,
+    "sex": "male",
+    "height_cm": 171,
+    "weight_kg": 83,
+    "bmi": 28.4,
+    "occupation": "retired delivery driver",
+    "location": "Ramat Gan"
+  },
+  "medicalHistory": {
+    "conditions": [
+      "systemic inflammatory process",
+      "type 2 diabetes",
+      "hypertension"
+    ],
+    "allergies": [],
+    "medications": [
+      "metformin",
+      "lisinopril"
+    ],
+    "relevantNotes": "Occasional non-radiating chest discomfort after exertion. Last routine comprehensive follow-up was over one year ago."
+  },
+  "clinicalContext": {
+    "knownCondition": "systemic inflammatory process",
+    "severity": "moderate",
+    "generatedAt": "2026-04-24"
+  },
+  "labResults": {
+    "inflammation": {
+      "crp_mg_l": {
+        "value": 18,
+        "status": "high"
+      },
+      "esr_mm_hr": {
+        "value": 55,
+        "status": "high"
+      },
+      "ferritin_ng_ml": {
+        "value": 420,
+        "status": "high"
+      }
+    },
+    "cbc": {
+      "wbc_k_ul": {
+        "value": 12.8,
+        "status": "high"
+      },
+      "neutrophils_percent": {
+        "value": 78,
+        "status": "high"
+      },
+      "lymphocytes_percent": {
+        "value": 14,
+        "status": "low"
+      },
+      "hemoglobin_g_dl": {
+        "value": 11.8,
+        "status": "low"
+      },
+      "platelets_k_ul": {
+        "value": 420,
+        "status": "high"
+      }
+    },
+    "renal": {
+      "creatinine_mg_dl": {
+        "value": 1.45,
+        "status": "high"
+      },
+      "urea_mg_dl": {
+        "value": 68,
+        "status": "high"
+      },
+      "egfr_ml_min": {
+        "value": 48,
+        "status": "low"
+      }
+    },
+    "liver": {
+      "alt_u_l": {
+        "value": 52,
+        "status": "high"
+      },
+      "ast_u_l": {
+        "value": 47,
+        "status": "high"
+      },
+      "alp_u_l": {
+        "value": 135,
+        "status": "high"
+      },
+      "albumin_g_dl": {
+        "value": 3.2,
+        "status": "low"
+      }
+    },
+    "electrolytes": {
+      "sodium_mmol_l": {
+        "value": 138,
+        "status": "normal"
+      },
+      "potassium_mmol_l": {
+        "value": 4.7,
+        "status": "normal"
+      },
+      "calcium_mg_dl": {
+        "value": 8.5,
+        "status": "low"
+      }
+    },
+    "metabolic": {
+      "glucose_mg_dl": {
+        "value": 112,
+        "status": "high"
+      },
+      "hba1c_percent": {
+        "value": 6.1,
+        "status": "borderline"
+      }
+    },
+    "lipids": {
+      "total_cholesterol_mg_dl": {
+        "value": 190,
+        "status": "normal"
+      },
+      "ldl_mg_dl": {
+        "value": 120,
+        "status": "borderline"
+      },
+      "hdl_mg_dl": {
+        "value": 42,
+        "status": "low"
+      },
+      "triglycerides_mg_dl": {
+        "value": 160,
+        "status": "high"
+      }
+    },
+    "additional": {
+      "vitamin_b12_pg_ml": {
+        "value": 280,
+        "status": "borderline_low"
+      },
+      "vitamin_d_ng_ml": {
+        "value": 18,
+        "status": "low"
+      },
+      "uric_acid_mg_dl": {
+        "value": 7.8,
+        "status": "high"
+      }
+    }
+  },
+  "agentAnalysis": {
+    "primaryPattern": "systemic inflammation",
+    "secondaryPatterns": [
+      "renal_function_impairment",
+      "anemia_of_inflammation",
+      "low_albumin_state",
+      "metabolic_dysregulation",
+      "nutritional_deficiencies"
+    ],
+    "systemImpacts": {
+      "immune_system": "moderate",
+      "renal_system": "moderate",
+      "hematologic": "mild_to_moderate",
+      "nutritional_status": "moderate",
+      "metabolic": "mild"
+    }
+  },
+  "recommendations": {
+    "urgency": "medical_followup_within_days",
+    "suggestedTests": [
+      "repeat_crp",
+      "repeat_cbc",
+      "urinalysis_and_culture",
+      "iron_panel",
+      "vitamin_b12_and_folate",
+      "repeat_renal_panel",
+      "repeat_liver_panel",
+      "chest_xray_if_symptomatic"
+    ],
+    "redFlags": [
+      "high_fever",
+      "confusion",
+      "shortness_of_breath",
+      "chest_pain",
+      "reduced_urine_output",
+      "rapid_clinical_deterioration"
+    ]
+  },
+  "currentContext": {
+    "goal": "Receive initial guidance about symptom triage and whether urgent in-person evaluation is needed.",
+    "constraints": "Needs practical next steps with clear urgency thresholds and minimal unnecessary travel."
+  },
+  "toneGuidance": {
+    "preferredTone": "direct and practical",
+    "format": "prioritized checklist"
+  }
+}

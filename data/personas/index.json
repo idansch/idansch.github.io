@@ -1,0 +1,22 @@
+{
+  "personas": [
+    {
+      "id": "maya",
+      "displayName": "Maya Cohen",
+      "shortDescription": "31-year-old product designer with migraine flares tied to stress and disrupted sleep.",
+      "profilePath": "data/personas/maya.json"
+    },
+    {
+      "id": "eli",
+      "displayName": "Eli Ben-David",
+      "shortDescription": "75-year-old retired driver with systemic inflammation, renal strain, and cardiometabolic comorbidities.",
+      "profilePath": "data/personas/eli.json"
+    },
+    {
+      "id": "noa",
+      "displayName": "Noa Levi",
+      "shortDescription": "26-year-old graduate student with asthma-allergy overlap and seasonal nighttime wheezing episodes.",
+      "profilePath": "data/personas/noa.json"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+name = "iys-medical-chat-mvp"
+main = "src/index.js"
+compatibility_date = "2026-04-24"
+
+[vars]
+OPENAI_MODEL = "gpt-5.4-mini"

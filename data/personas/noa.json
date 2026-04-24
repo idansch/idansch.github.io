@@ -1,0 +1,109 @@
+{
+  "personaId": "noa",
+  "demographics": {
+    "age": 26,
+    "sex": "female",
+    "height_cm": 163,
+    "weight_kg": 58,
+    "bmi": 21.8,
+    "occupation": "graduate student",
+    "location": "Jerusalem"
+  },
+  "medicalHistory": {
+    "conditions": [
+      "mild persistent asthma",
+      "seasonal allergic rhinitis"
+    ],
+    "allergies": [
+      "cat dander",
+      "grass pollen"
+    ],
+    "medications": [
+      "budesonide inhaler",
+      "albuterol rescue inhaler",
+      "cetirizine",
+      "saline nasal rinse"
+    ],
+    "relevantNotes": "Has occasional nighttime wheezing during high pollen days and worries about overusing rescue inhaler."
+  },
+  "clinicalContext": {
+    "knownCondition": "asthma-allergy overlap with seasonal exacerbations",
+    "severity": "mild_to_moderate",
+    "generatedAt": "2026-04-24"
+  },
+  "labResults": {
+    "inflammation": {
+      "crp_mg_l": {
+        "value": 1.9,
+        "status": "normal"
+      },
+      "eosinophils_percent": {
+        "value": 6.8,
+        "status": "high"
+      }
+    },
+    "pulmonary": {
+      "peak_flow_l_min": {
+        "value": 360,
+        "status": "borderline_low"
+      },
+      "fev1_percent_predicted": {
+        "value": 82,
+        "status": "borderline"
+      }
+    },
+    "cbc": {
+      "wbc_k_ul": {
+        "value": 8.2,
+        "status": "normal"
+      },
+      "hemoglobin_g_dl": {
+        "value": 12.9,
+        "status": "normal"
+      }
+    },
+    "nutritional": {
+      "vitamin_d_ng_ml": {
+        "value": 22,
+        "status": "borderline_low"
+      }
+    }
+  },
+  "agentAnalysis": {
+    "primaryPattern": "allergic airway reactivity",
+    "secondaryPatterns": [
+      "nighttime_symptom_variability",
+      "seasonal_trigger_sensitivity",
+      "rescue_inhaler_reliance_risk"
+    ],
+    "systemImpacts": {
+      "respiratory": "moderate",
+      "sleep_quality": "mild",
+      "daily_function": "mild_to_moderate"
+    }
+  },
+  "recommendations": {
+    "urgency": "timely_primary_or_pulmonary_followup",
+    "suggestedTests": [
+      "peak_flow_diary",
+      "rescue_inhaler_use_frequency_log",
+      "spirometry_followup",
+      "allergy_trigger_review"
+    ],
+    "redFlags": [
+      "inability_to_speak_full_sentences",
+      "cyanosis",
+      "rescue_inhaler_no_relief",
+      "persistent_chest_tightness",
+      "rapid_breathing_worsening"
+    ]
+  },
+  "currentContext": {
+    "goal": "Get initial advice for managing breathing symptoms and when to seek urgent in-person care.",
+    "constraints": "Wants plain-language explanations and low-friction daily plan suggestions."
+  },
+  "toneGuidance": {
+    "preferredTone": "supportive and precise",
+    "format": "short paragraphs with concrete next actions"
+  }
+}

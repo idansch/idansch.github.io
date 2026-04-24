@@ -3,84 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shelter Time - IYS Apps</title>
-    <meta name="description" content="Track estimated shelter time today and in the last 24 hours based on your current location.">
+    <title>Medical Intake Chat MVP - IYS Apps</title>
+    <meta name="description" content="Temporary persona-first medical intake chat MVP.">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
-    <main class="container shelter-page" id="shelter-app">
-        <section class="header shelter-hero">
-            <p class="shelter-kicker">Private Utility</p>
-            <h1>Shelter Time</h1>
-            <p class="shelter-subtitle">Estimate how much time you spent in shelter based on local alerts.</p>
+    <main class="container shelter-page medical-chat-page" id="shelter-app" data-chat-mode="mock" data-api-endpoint="https://YOUR-WORKER-URL.workers.dev/chat">
+        <section class="header medical-hero">
+            <p class="shelter-kicker">Temporary MVP</p>
+            <h1>Medical Intake Chat</h1>
+            <p class="medical-subtitle">Choose a simulated persona, then start a chat for initial medical guidance.</p>
+            <p class="medical-disclaimer" role="note">This assistant is for informational support only and is not a diagnosis tool.</p>
 
-            <div class="shelter-actions">
-                <button id="locate-button" class="cta-button" type="button">Use Current Location</button>
-                <button id="refresh-button" class="secondary-button" type="button">Refresh Data</button>
+            <div class="persona-current" id="selected-persona-summary">No persona selected yet.</div>
+
+            <div class="medical-status-row">
+                <p id="medical-status" class="shelter-status" role="status" aria-live="polite">Loading personas...</p>
+                <button id="change-persona-button" class="secondary-button" type="button" hidden>Change Persona</button>
             </div>
-
-            <div class="calc-mode-row">
-                <label class="calc-mode-label" for="estimate-only-checkbox">
-                    <input id="estimate-only-checkbox" type="checkbox">
-                    Estimate-only calculation
-                    <span class="calc-tooltip" tabindex="0" title="Default mode uses incident-end (release) messages when available for your area, and falls back to a fixed estimate only if no release message is found within 30 minutes. Estimate-only mode always uses fixed duration per alert.">?</span>
-                </label>
-            </div>
-
-            <p id="shelter-status" class="shelter-status" role="status" aria-live="polite">Location not set yet.</p>
-            <p id="shelter-last-updated" class="shelter-last-updated">Last updated: --</p>
         </section>
 
-        <section class="shelter-grid" aria-label="Shelter time metrics">
-            <article class="shelter-card">
-                <p class="shelter-label">Today (calendar)</p>
-                <p id="metric-today" class="shelter-value">--</p>
-                <p id="alerts-today" class="shelter-meta">-- alerts</p>
-            </article>
-            <article class="shelter-card">
-                <p class="shelter-label">Last 24 hours</p>
-                <p id="metric-24h" class="shelter-value">--</p>
-                <p id="alerts-24h" class="shelter-meta">-- alerts</p>
-            </article>
-            <article class="shelter-card">
-                <p class="shelter-label">Average Visit Duration</p>
-                <p id="metric-avg-today" class="shelter-value">--</p>
-                <p id="metric-avg-24h" class="shelter-meta">Last 24h: --</p>
-            </article>
+        <section class="persona-grid-section" id="persona-select-section" aria-label="Persona selection">
+            <h2>Select a Persona</h2>
+            <div id="persona-grid" class="persona-grid">
+                <article class="persona-card persona-card-placeholder" aria-hidden="true">
+                    <p>Loading personas...</p>
+                </article>
+            </div>
         </section>
 
-        <section class="main-content shelter-details">
-            <h2>Location Match</h2>
-            <p id="location-match" class="shelter-meta">No location selected.</p>
-            <p id="resolved-city" class="shelter-meta">Data city: --</p>
+        <section class="main-content chat-panel" aria-label="Chat interface">
+            <div id="chat-empty-state" class="chat-empty-state">Select a persona to unlock the chat.</div>
 
-            <div class="manual-city-row">
-                <label for="manual-city">City Override (optional)</label>
-                <div class="manual-city-controls">
-                    <input id="manual-city" type="text" placeholder="e.g. תל אביב" autocomplete="off">
-                    <button id="apply-city-button" class="secondary-button" type="button">Apply City</button>
-                </div>
+            <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text" hidden></div>
+
+            <div id="chat-error" class="chat-error" hidden>
+                <p id="chat-error-text"></p>
+                <button id="retry-button" class="secondary-button" type="button">Retry Last Message</button>
             </div>
 
-            <details class="source-details">
-                <summary>Data Source (Advanced)</summary>
-                <p>Default source uses a public relay for browser CORS compatibility.</p>
-                <label for="source-endpoint">Feed endpoint URL</label>
-                <input id="source-endpoint" type="url" inputmode="url" spellcheck="false">
-                <div class="source-actions">
-                    <button id="save-source-button" class="secondary-button" type="button">Save Source</button>
-                    <button id="reset-source-button" class="secondary-button" type="button">Reset Default</button>
-                </div>
-            </details>
-
-            <h2>Recent Matching Visits</h2>
-            <ul id="recent-alerts" class="shelter-alert-list">
-                <li class="shelter-empty">No matching shelter visits yet.</li>
-            </ul>
-
-            <p class="shelter-footnote">Default model: release messages define shelter end time. Fallback model: each matching alert contributes a 10-minute shelter window, merged when overlapping.</p>
+            <form id="chat-form" class="chat-composer" novalidate>
+                <label for="chat-input" class="sr-only">Message</label>
+                <textarea id="chat-input" rows="1" maxlength="2000" placeholder="Describe symptoms, concerns, or questions..."></textarea>
+                <button id="send-button" class="cta-button" type="submit">Send</button>
+            </form>
         </section>
     </main>
 

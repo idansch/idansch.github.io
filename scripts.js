@@ -55,8 +55,8 @@ function initRevealAnimations() {
         '.policy-section',
         '.terms-section',
         '.header > *',
-        '.shelter-card',
-        '.shelter-details > *',
+        '.persona-card',
+        '.chat-panel > *',
         '.invite-section',
         '.download-section',
         '.footer p'
@@ -122,647 +122,809 @@ function initShelterPage() {
     const root = document.getElementById('shelter-app');
     if (!root || root.dataset.initialized === 'true') return;
 
-    const DEFAULT_FEED_SOURCE = 'https://api.codetabs.com/v1/proxy/?quest=https://api.tzevaadom.co.il/ios/feed';
-    const DEFAULT_CITIES_SOURCE = 'https://api.codetabs.com/v1/proxy/?quest=https://www.tzevaadom.co.il/static/cities.json';
-    const STORAGE_SOURCE_KEY = 'shelter-feed-source';
-    const STORAGE_CITY_KEY = 'shelter-manual-city';
-    const STORAGE_ESTIMATE_ONLY_KEY = 'shelter-estimate-only';
-    const ALERT_WINDOW_MS = 10 * 60 * 1000;
-    const RELEASE_LOOKAHEAD_MS = 30 * 60 * 1000;
-    const MIN_SESSION_MS = 30 * 1000;
-
-    const locateButton = document.getElementById('locate-button');
-    const refreshButton = document.getElementById('refresh-button');
-    const applyCityButton = document.getElementById('apply-city-button');
-    const estimateOnlyCheckbox = document.getElementById('estimate-only-checkbox');
-    const sourceInput = document.getElementById('source-endpoint');
-    const saveSourceButton = document.getElementById('save-source-button');
-    const resetSourceButton = document.getElementById('reset-source-button');
-    const manualCityInput = document.getElementById('manual-city');
-    const statusNode = document.getElementById('shelter-status');
-    const updatedNode = document.getElementById('shelter-last-updated');
-    const metricTodayNode = document.getElementById('metric-today');
-    const metric24hNode = document.getElementById('metric-24h');
-    const alertsTodayNode = document.getElementById('alerts-today');
-    const alerts24hNode = document.getElementById('alerts-24h');
-    const metricAvgTodayNode = document.getElementById('metric-avg-today');
-    const metricAvg24hNode = document.getElementById('metric-avg-24h');
-    const locationMatchNode = document.getElementById('location-match');
-    const resolvedCityNode = document.getElementById('resolved-city');
-    const recentAlertsNode = document.getElementById('recent-alerts');
-
-    const appState = {
-        lat: null,
-        lon: null,
-        cityCandidates: [],
-        manualCity: localStorage.getItem(STORAGE_CITY_KEY) || '',
-        cityDirectory: null,
-        inferredCity: null
+    const VIEW_PERSONA = 'persona_select';
+    const VIEW_CHAT = 'chat';
+    const CHAT_MODE_MOCK = 'mock';
+    const CHAT_MODE_LIVE = 'live';
+    const ENDPOINT_PLACEHOLDER_PATTERN = /(YOUR-WORKER-URL|example\.workers\.dev)/i;
+    const MAX_HISTORY_MESSAGES = 30;
+    const LOCAL_FALLBACK_PERSONAS = [
+        {
+            id: 'maya',
+            displayName: 'Maya Cohen',
+            shortDescription: '31-year-old product designer with migraine flares tied to stress and disrupted sleep.',
+            profilePath: 'data/personas/maya.json'
+        },
+        {
+            id: 'eli',
+            displayName: 'Eli Ben-David',
+            shortDescription: '75-year-old retired driver with systemic inflammation, renal strain, and cardiometabolic comorbidities.',
+            profilePath: 'data/personas/eli.json'
+        },
+        {
+            id: 'noa',
+            displayName: 'Noa Levi',
+            shortDescription: '26-year-old graduate student with asthma-allergy overlap and seasonal nighttime wheezing episodes.',
+            profilePath: 'data/personas/noa.json'
+        }
+    ];
+    const LOCAL_FALLBACK_PROFILES = {
+        maya: {
+            personaId: 'maya',
+            demographics: {
+                age: 31,
+                sex: 'female',
+                height_cm: 165,
+                weight_kg: 60,
+                bmi: 22,
+                occupation: 'product designer',
+                location: 'Tel Aviv'
+            },
+            medicalHistory: {
+                conditions: ['episodic migraine', 'mild anxiety', 'insomnia (stress-related)'],
+                allergies: ['penicillin'],
+                medications: ['sumatriptan as needed', 'occasional ibuprofen', 'melatonin as needed'],
+                relevantNotes: 'Reports increased migraine frequency during stressful work sprints and reduced sleep quality over the past month.'
+            },
+            clinicalContext: {
+                knownCondition: 'migraine flare with stress-sleep interaction',
+                severity: 'mild_to_moderate',
+                generatedAt: '2026-04-24'
+            },
+            labResults: {
+                inflammation: {
+                    crp_mg_l: { value: 2.1, status: 'normal' },
+                    esr_mm_hr: { value: 14, status: 'normal' }
+                },
+                cbc: {
+                    hemoglobin_g_dl: { value: 12.6, status: 'normal' },
+                    wbc_k_ul: { value: 7.4, status: 'normal' }
+                },
+                metabolic: {
+                    glucose_mg_dl: { value: 91, status: 'normal' },
+                    hba1c_percent: { value: 5.3, status: 'normal' }
+                },
+                nutritional: {
+                    vitamin_d_ng_ml: { value: 24, status: 'borderline_low' },
+                    vitamin_b12_pg_ml: { value: 345, status: 'normal' }
+                }
+            },
+            agentAnalysis: {
+                primaryPattern: 'stress-triggered migraine burden',
+                secondaryPatterns: ['sleep_deprivation', 'screen_exposure_trigger', 'anxiety_amplification'],
+                systemImpacts: {
+                    neurologic: 'moderate',
+                    sleep_regulation: 'moderate',
+                    mental_health: 'mild_to_moderate'
+                }
+            },
+            recommendations: {
+                urgency: 'outpatient_followup_if_pattern_worsens',
+                suggestedTests: ['headache_diary_tracking', 'blood_pressure_log_during_episodes', 'sleep_duration_tracking', 'followup_neurology_if_frequency_increases'],
+                redFlags: ['sudden_worst_headache', 'neurologic_deficit', 'persistent_vomiting', 'vision_loss', 'confusion']
+            },
+            currentContext: {
+                goal: 'Get initial guidance for headache episodes and identify warning signs that should trigger urgent care.',
+                constraints: 'Prefers concise actionable steps and avoids sedating medication during work hours.'
+            },
+            toneGuidance: {
+                preferredTone: 'clear and calm',
+                format: 'short bullet points with a brief summary'
+            }
+        },
+        eli: {
+            personaId: 'eli',
+            demographics: {
+                age: 75,
+                sex: 'male',
+                height_cm: 171,
+                weight_kg: 83,
+                bmi: 28.4,
+                occupation: 'retired delivery driver',
+                location: 'Ramat Gan'
+            },
+            medicalHistory: {
+                conditions: ['systemic inflammatory process', 'type 2 diabetes', 'hypertension'],
+                allergies: [],
+                medications: ['metformin', 'lisinopril'],
+                relevantNotes: 'Occasional non-radiating chest discomfort after exertion. Last routine comprehensive follow-up was over one year ago.'
+            },
+            clinicalContext: {
+                knownCondition: 'systemic inflammatory process',
+                severity: 'moderate',
+                generatedAt: '2026-04-24'
+            },
+            labResults: {
+                inflammation: {
+                    crp_mg_l: { value: 18, status: 'high' },
+                    esr_mm_hr: { value: 55, status: 'high' },
+                    ferritin_ng_ml: { value: 420, status: 'high' }
+                },
+                cbc: {
+                    wbc_k_ul: { value: 12.8, status: 'high' },
+                    neutrophils_percent: { value: 78, status: 'high' },
+                    lymphocytes_percent: { value: 14, status: 'low' },
+                    hemoglobin_g_dl: { value: 11.8, status: 'low' },
+                    platelets_k_ul: { value: 420, status: 'high' }
+                },
+                renal: {
+                    creatinine_mg_dl: { value: 1.45, status: 'high' },
+                    urea_mg_dl: { value: 68, status: 'high' },
+                    egfr_ml_min: { value: 48, status: 'low' }
+                },
+                liver: {
+                    alt_u_l: { value: 52, status: 'high' },
+                    ast_u_l: { value: 47, status: 'high' },
+                    alp_u_l: { value: 135, status: 'high' },
+                    albumin_g_dl: { value: 3.2, status: 'low' }
+                },
+                electrolytes: {
+                    sodium_mmol_l: { value: 138, status: 'normal' },
+                    potassium_mmol_l: { value: 4.7, status: 'normal' },
+                    calcium_mg_dl: { value: 8.5, status: 'low' }
+                },
+                metabolic: {
+                    glucose_mg_dl: { value: 112, status: 'high' },
+                    hba1c_percent: { value: 6.1, status: 'borderline' }
+                },
+                lipids: {
+                    total_cholesterol_mg_dl: { value: 190, status: 'normal' },
+                    ldl_mg_dl: { value: 120, status: 'borderline' },
+                    hdl_mg_dl: { value: 42, status: 'low' },
+                    triglycerides_mg_dl: { value: 160, status: 'high' }
+                },
+                additional: {
+                    vitamin_b12_pg_ml: { value: 280, status: 'borderline_low' },
+                    vitamin_d_ng_ml: { value: 18, status: 'low' },
+                    uric_acid_mg_dl: { value: 7.8, status: 'high' }
+                }
+            },
+            agentAnalysis: {
+                primaryPattern: 'systemic inflammation',
+                secondaryPatterns: ['renal_function_impairment', 'anemia_of_inflammation', 'low_albumin_state', 'metabolic_dysregulation', 'nutritional_deficiencies'],
+                systemImpacts: {
+                    immune_system: 'moderate',
+                    renal_system: 'moderate',
+                    hematologic: 'mild_to_moderate',
+                    nutritional_status: 'moderate',
+                    metabolic: 'mild'
+                }
+            },
+            recommendations: {
+                urgency: 'medical_followup_within_days',
+                suggestedTests: ['repeat_crp', 'repeat_cbc', 'urinalysis_and_culture', 'iron_panel', 'vitamin_b12_and_folate', 'repeat_renal_panel', 'repeat_liver_panel', 'chest_xray_if_symptomatic'],
+                redFlags: ['high_fever', 'confusion', 'shortness_of_breath', 'chest_pain', 'reduced_urine_output', 'rapid_clinical_deterioration']
+            },
+            currentContext: {
+                goal: 'Receive initial guidance about symptom triage and whether urgent in-person evaluation is needed.',
+                constraints: 'Needs practical next steps with clear urgency thresholds and minimal unnecessary travel.'
+            },
+            toneGuidance: {
+                preferredTone: 'direct and practical',
+                format: 'prioritized checklist'
+            }
+        },
+        noa: {
+            personaId: 'noa',
+            demographics: {
+                age: 26,
+                sex: 'female',
+                height_cm: 163,
+                weight_kg: 58,
+                bmi: 21.8,
+                occupation: 'graduate student',
+                location: 'Jerusalem'
+            },
+            medicalHistory: {
+                conditions: ['mild persistent asthma', 'seasonal allergic rhinitis'],
+                allergies: ['cat dander', 'grass pollen'],
+                medications: ['budesonide inhaler', 'albuterol rescue inhaler', 'cetirizine', 'saline nasal rinse'],
+                relevantNotes: 'Has occasional nighttime wheezing during high pollen days and worries about overusing rescue inhaler.'
+            },
+            clinicalContext: {
+                knownCondition: 'asthma-allergy overlap with seasonal exacerbations',
+                severity: 'mild_to_moderate',
+                generatedAt: '2026-04-24'
+            },
+            labResults: {
+                inflammation: {
+                    crp_mg_l: { value: 1.9, status: 'normal' },
+                    eosinophils_percent: { value: 6.8, status: 'high' }
+                },
+                pulmonary: {
+                    peak_flow_l_min: { value: 360, status: 'borderline_low' },
+                    fev1_percent_predicted: { value: 82, status: 'borderline' }
+                },
+                cbc: {
+                    wbc_k_ul: { value: 8.2, status: 'normal' },
+                    hemoglobin_g_dl: { value: 12.9, status: 'normal' }
+                },
+                nutritional: {
+                    vitamin_d_ng_ml: { value: 22, status: 'borderline_low' }
+                }
+            },
+            agentAnalysis: {
+                primaryPattern: 'allergic airway reactivity',
+                secondaryPatterns: ['nighttime_symptom_variability', 'seasonal_trigger_sensitivity', 'rescue_inhaler_reliance_risk'],
+                systemImpacts: {
+                    respiratory: 'moderate',
+                    sleep_quality: 'mild',
+                    daily_function: 'mild_to_moderate'
+                }
+            },
+            recommendations: {
+                urgency: 'timely_primary_or_pulmonary_followup',
+                suggestedTests: ['peak_flow_diary', 'rescue_inhaler_use_frequency_log', 'spirometry_followup', 'allergy_trigger_review'],
+                redFlags: ['inability_to_speak_full_sentences', 'cyanosis', 'rescue_inhaler_no_relief', 'persistent_chest_tightness', 'rapid_breathing_worsening']
+            },
+            currentContext: {
+                goal: 'Get initial advice for managing breathing symptoms and when to seek urgent in-person care.',
+                constraints: 'Wants plain-language explanations and low-friction daily plan suggestions.'
+            },
+            toneGuidance: {
+                preferredTone: 'supportive and precise',
+                format: 'short paragraphs with concrete next actions'
+            }
+        }
     };
 
-    sourceInput.value = localStorage.getItem(STORAGE_SOURCE_KEY) || DEFAULT_FEED_SOURCE;
-    manualCityInput.value = appState.manualCity;
-    estimateOnlyCheckbox.checked = localStorage.getItem(STORAGE_ESTIMATE_ONLY_KEY) === 'true';
+    const state = {
+        view: VIEW_PERSONA,
+        personas: [],
+        profileCache: new Map(),
+        selectedPersona: null,
+        messages: [],
+        isLoading: false,
+        lastError: null,
+        retryContext: null,
+        stickToBottom: true
+    };
 
-    locateButton?.addEventListener('click', async () => {
-        setStatus('Detecting your location...');
-        const coords = await getCurrentCoords();
-        if (!coords) return;
+    const personaSelectSection = document.getElementById('persona-select-section');
+    const personaGrid = document.getElementById('persona-grid');
+    const changePersonaButton = document.getElementById('change-persona-button');
+    const statusNode = document.getElementById('medical-status');
+    const summaryNode = document.getElementById('selected-persona-summary');
 
-        appState.lat = coords.lat;
-        appState.lon = coords.lon;
-        const candidates = await reverseGeocodeCandidates(coords.lat, coords.lon);
-        appState.cityCandidates = candidates;
-        const cityDirectory = await fetchCityDirectory();
-        appState.inferredCity = inferCityFromLocation(coords.lat, coords.lon, candidates, cityDirectory);
+    const chatEmptyState = document.getElementById('chat-empty-state');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatError = document.getElementById('chat-error');
+    const chatErrorText = document.getElementById('chat-error-text');
+    const retryButton = document.getElementById('retry-button');
 
-        const candidateText = candidates.length ? candidates.join(', ') : 'No city detected';
-        locationMatchNode.textContent = `Coordinates: ${coords.lat.toFixed(5)}, ${coords.lon.toFixed(5)} | Candidates: ${candidateText}`;
-        updateResolvedCityLabel();
-        setStatus('Location updated. Fetching alerts...');
-        await computeAndRender();
-    });
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
 
-    refreshButton?.addEventListener('click', async () => {
-        if (!hasLocationSelection()) {
-            setStatus('Set a location first, or apply a manual city.');
-            return;
-        }
-        setStatus('Refreshing alert history...');
-        await computeAndRender();
-    });
-
-    applyCityButton?.addEventListener('click', async () => {
-        const city = (manualCityInput.value || '').trim();
-        appState.manualCity = city;
-        localStorage.setItem(STORAGE_CITY_KEY, city);
-        const cityText = city ? city : 'None';
-        locationMatchNode.textContent = `Manual city override: ${cityText}`;
-        updateResolvedCityLabel();
-        if (!city && !appState.cityCandidates.length) {
-            setStatus('Manual city removed. Set location or add a city override.');
-            return;
-        }
-        setStatus(city ? `Manual city applied: ${city}` : 'Manual city removed.');
-        await computeAndRender();
-    });
-
-    estimateOnlyCheckbox?.addEventListener('change', async () => {
-        localStorage.setItem(STORAGE_ESTIMATE_ONLY_KEY, String(estimateOnlyCheckbox.checked));
-        if (hasLocationSelection()) {
-            setStatus(estimateOnlyCheckbox.checked ? 'Estimate-only mode enabled.' : 'Release-first mode enabled.');
-            await computeAndRender();
-            return;
-        }
-        setStatus(estimateOnlyCheckbox.checked ? 'Estimate-only mode enabled.' : 'Release-first mode enabled.');
-    });
-
-    saveSourceButton?.addEventListener('click', () => {
-        const value = (sourceInput.value || '').trim();
-        if (!value) {
-            setStatus('Source URL cannot be empty.');
-            return;
-        }
-        localStorage.setItem(STORAGE_SOURCE_KEY, value);
-        setStatus('Source URL saved.');
-    });
-
-    resetSourceButton?.addEventListener('click', () => {
-        localStorage.removeItem(STORAGE_SOURCE_KEY);
-        sourceInput.value = DEFAULT_FEED_SOURCE;
-        setStatus('Source URL reset to default.');
-    });
-
-    if (appState.manualCity) {
-        locationMatchNode.textContent = `Manual city override: ${appState.manualCity}`;
+    if (!personaSelectSection || !personaGrid || !changePersonaButton || !statusNode || !summaryNode || !chatEmptyState || !chatMessages || !chatError || !chatErrorText || !retryButton || !chatForm || !chatInput || !sendButton) {
+        return;
     }
-    updateResolvedCityLabel();
 
+    changePersonaButton.addEventListener('click', () => {
+        state.lastError = null;
+        state.retryContext = null;
+        switchView(VIEW_PERSONA);
+        renderError();
+        setStatus('Pick a persona to start a new chat.');
+    });
+
+    personaGrid.addEventListener('click', async (event) => {
+        const trigger = event.target.closest('button[data-persona-id]');
+        if (!trigger || state.isLoading) return;
+        await selectPersona(trigger.dataset.personaId);
+    });
+
+    chatForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (state.isLoading || !state.selectedPersona) return;
+
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+
+        chatInput.value = '';
+        autoSizeInput();
+        await sendUserMessage(userMessage);
+    });
+
+    chatInput.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+        event.preventDefault();
+        if (!state.isLoading) {
+            chatForm.requestSubmit();
+        }
+    });
+
+    chatInput.addEventListener('input', autoSizeInput);
+
+    retryButton.addEventListener('click', async () => {
+        if (!state.retryContext || state.isLoading || !state.selectedPersona) return;
+        await retryLastMessage();
+    });
+
+    chatMessages.addEventListener('scroll', () => {
+        const distance = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight;
+        state.stickToBottom = distance <= 72;
+    });
+
+    setupKeyboardViewportTracking();
+    autoSizeInput();
+    render();
     root.dataset.initialized = 'true';
 
-    function setStatus(text) {
-        statusNode.textContent = text;
-    }
+    loadPersonas();
 
-    function hasLocationSelection() {
-        return Boolean(appState.manualCity || appState.inferredCity || appState.cityCandidates.length);
-    }
-
-    function getSelectedCityCandidates() {
-        if (appState.manualCity) return [appState.manualCity];
-        if (appState.inferredCity) return appState.inferredCity.searchNames;
-        return appState.cityCandidates;
-    }
-
-    function updateResolvedCityLabel() {
-        if (!resolvedCityNode) return;
-
-        if (appState.manualCity) {
-            resolvedCityNode.textContent = `Data city: ${appState.manualCity} (manual)`;
-            return;
-        }
-
-        if (appState.inferredCity) {
-            const method = appState.inferredCity.matchMethod === 'name'
-                ? 'inferred from location name + nearest match'
-                : 'inferred by nearest official alert city';
-            resolvedCityNode.textContent = `Data city: ${appState.inferredCity.he} (${method})`;
-            return;
-        }
-
-        if (appState.cityCandidates.length) {
-            resolvedCityNode.textContent = 'Data city: unresolved (using raw location names)';
-            return;
-        }
-
-        resolvedCityNode.textContent = 'Data city: --';
-    }
-
-    async function computeAndRender() {
-        if (!hasLocationSelection()) {
-            setStatus('Set a location first, or apply a manual city.');
-            return;
-        }
+    async function loadPersonas() {
+        setStatus('Loading personas...');
 
         try {
-            const [feed, cityDirectory] = await Promise.all([
-                fetchAlertsFeed(sourceInput.value || DEFAULT_FEED_SOURCE),
-                fetchCityDirectory()
-            ]);
-
-            const alerts = flattenAlerts(feed.alertsHistory);
-            const releases = flattenReleaseInstructions(feed.instructions);
-            const relevantAlerts = selectRelevantAlerts(alerts, getSelectedCityCandidates(), cityDirectory);
-            const sessions = buildShelterSessions(relevantAlerts, releases, estimateOnlyCheckbox.checked);
-            const totals = computeShelterTotalsFromSessions(sessions);
-
-            renderMetrics(totals, sessions);
-
-            const releaseBasedCount = sessions.filter((session) => session.source === 'release').length;
-            const fallbackCount = sessions.length - releaseBasedCount;
-            setStatus(`Computed ${sessions.length} visits (${releaseBasedCount} release-based, ${fallbackCount} estimated fallback).`);
-            updatedNode.textContent = `Last updated: ${new Date().toLocaleString()}`;
-        } catch (error) {
-            setStatus(`Failed to fetch alerts. ${error.message}`);
-        }
-    }
-
-    function renderMetrics(totals, sessions) {
-        metricTodayNode.textContent = formatDuration(totals.todayMs);
-        metric24hNode.textContent = formatDuration(totals.last24hMs);
-        alertsTodayNode.textContent = `${totals.todayAlerts} alerts`;
-        alerts24hNode.textContent = `${totals.last24hAlerts} alerts`;
-        metricAvgTodayNode.textContent = formatDuration(totals.avgTodayMs);
-        metricAvg24hNode.textContent = `Last 24h: ${formatDuration(totals.avg24hMs)} (${totals.last24hVisits} visits)`;
-        renderRecentAlerts(sessions);
-    }
-
-    function renderRecentAlerts(sessions) {
-        const items = sessions
-            .slice()
-            .sort((a, b) => b.start - a.start)
-            .slice(0, 14);
-
-        if (!items.length) {
-            recentAlertsNode.innerHTML = '<li class="shelter-empty">No matching shelter visits found for this location.</li>';
-            return;
-        }
-
-        recentAlertsNode.innerHTML = items
-            .map((item) => {
-                const startLabel = new Date(item.start).toLocaleString();
-                const endLabel = new Date(item.end).toLocaleTimeString();
-                const cityLabel = item.cities.join(', ');
-                const sourceLabel = item.source === 'release' ? 'Release-based' : 'Estimated';
-                return `<li><strong>${startLabel} - ${endLabel}</strong><span class="visit-source">${sourceLabel}</span><br>${cityLabel}</li>`;
-            })
-            .join('');
-    }
-
-    async function fetchAlertsFeed(sourceUrl) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
-
-        try {
-            const response = await fetch(sourceUrl, {
-                signal: controller.signal,
-                cache: 'no-store'
-            });
+            const response = await fetch('data/personas/index.json', { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
 
             const payload = await response.json();
-            if (Array.isArray(payload)) {
-                return {
-                    alertsHistory: payload,
-                    instructions: []
-                };
+            const items = Array.isArray(payload.personas) ? payload.personas : payload;
+
+            const personas = items
+                .filter((persona) => persona && typeof persona.id === 'string' && typeof persona.displayName === 'string' && typeof persona.shortDescription === 'string' && typeof persona.profilePath === 'string')
+                .slice(0, 3);
+
+            if (!personas.length) {
+                throw new Error('No valid personas found in index.json');
             }
 
-            return {
-                alertsHistory: payload.alertsHistory || [],
-                instructions: payload.instructions || []
-            };
-        } finally {
-            clearTimeout(timeout);
-        }
-    }
-
-    async function fetchCityDirectory() {
-        if (appState.cityDirectory) return appState.cityDirectory;
-
-        const directory = {
-            byName: new Map(),
-            byId: new Map(),
-            cities: []
-        };
-
-        try {
-            const response = await fetch(DEFAULT_CITIES_SOURCE, { cache: 'force-cache' });
-            if (!response.ok) throw new Error(`Cities HTTP ${response.status}`);
-            const payload = await response.json();
-            const cities = payload?.cities || {};
-
-            Object.values(cities).forEach((city) => {
-                const cityId = Number(city.id);
-                if (!Number.isFinite(cityId)) return;
-
-                const cityRecord = {
-                    id: cityId,
-                    he: city.he || '',
-                    en: city.en || '',
-                    lat: Number(city.lat),
-                    lng: Number(city.lng),
-                    searchNames: []
-                };
-
-                const names = [city.he, city.en, city.ru, city.ar, city.es];
-                names.forEach((name) => {
-                    const normalized = normalizeCity(name);
-                    if (!normalized) return;
-                    cityRecord.searchNames.push(String(name).trim());
-                    const bucket = directory.byName.get(normalized) || new Set();
-                    bucket.add(cityId);
-                    directory.byName.set(normalized, bucket);
-                });
-
-                cityRecord.searchNames = [...new Set(cityRecord.searchNames.filter(Boolean))];
-                directory.byId.set(cityId, cityRecord);
-                directory.cities.push(cityRecord);
-            });
-        } catch (_error) {
-            // The page can still run estimate-only if city directory fetch fails.
-        }
-
-        appState.cityDirectory = directory;
-        return directory;
-    }
-
-    function flattenAlerts(alertsHistory) {
-        if (!Array.isArray(alertsHistory)) return [];
-        const all = [];
-
-        alertsHistory.forEach((item) => {
-            const alerts = Array.isArray(item.alerts) ? item.alerts : [];
-            alerts.forEach((alert) => {
-                if (alert.isDrill) return;
-                if (!Array.isArray(alert.cities) || typeof alert.time !== 'number') return;
-                all.push({
-                    time: alert.time,
-                    cities: alert.cities
-                });
-            });
-        });
-
-        return all;
-    }
-
-    function flattenReleaseInstructions(instructions) {
-        if (!Array.isArray(instructions)) return [];
-
-        return instructions
-            .filter((instruction) =>
-                instruction &&
-                instruction.instructionType === 1 &&
-                typeof instruction.time === 'number' &&
-                Array.isArray(instruction.citiesIds) &&
-                instruction.citiesIds.length
-            )
-            .map((instruction) => ({
-                timeMs: instruction.time * 1000,
-                citiesIds: instruction.citiesIds.map((cityId) => Number(cityId)).filter(Number.isFinite)
-            }))
-            .sort((a, b) => a.timeMs - b.timeMs);
-    }
-
-    function selectRelevantAlerts(alerts, cityCandidates, cityDirectory) {
-        const normalizedCandidates = cityCandidates
-            .map((city) => normalizeCity(city))
-            .filter(Boolean);
-
-        if (!normalizedCandidates.length) return [];
-
-        return alerts
-            .map((alert) => {
-                const matchedCities = alert.cities.filter((city) => {
-                    const normalizedAlertCity = normalizeCity(city);
-                    return normalizedCandidates.some((candidate) => cityMatches(normalizedAlertCity, candidate));
-                });
-
-                if (!matchedCities.length) return null;
-
-                const matchedCityIdsSet = new Set();
-                matchedCities.forEach((cityName) => {
-                    const ids = getCityIdsForName(cityName, cityDirectory);
-                    ids.forEach((id) => matchedCityIdsSet.add(id));
-                });
-
-                return {
-                    ...alert,
-                    matchedCities,
-                    matchedCityIds: [...matchedCityIdsSet]
-                };
-            })
-            .filter(Boolean);
-    }
-
-    function getCityIdsForName(cityName, cityDirectory) {
-        if (!cityDirectory || !cityDirectory.byName || cityDirectory.byName.size === 0) return [];
-
-        const normalized = normalizeCity(cityName);
-        if (!normalized) return [];
-
-        const direct = cityDirectory.byName.get(normalized);
-        if (direct && direct.size) return [...direct];
-
-        const parts = normalized.split(/[-,\/]/).map((part) => part.trim()).filter(Boolean);
-        const ids = new Set();
-        parts.forEach((part) => {
-            const bucket = cityDirectory.byName.get(part);
-            if (!bucket) return;
-            bucket.forEach((id) => ids.add(id));
-        });
-
-        return [...ids];
-    }
-
-    function inferCityFromLocation(lat, lon, geocodeCandidates, cityDirectory) {
-        if (!cityDirectory || !cityDirectory.cities || !cityDirectory.cities.length) return null;
-
-        const candidateIds = new Set();
-        geocodeCandidates.forEach((candidate) => {
-            getCityIdsForName(candidate, cityDirectory).forEach((id) => candidateIds.add(id));
-        });
-
-        const byNameMatches = [...candidateIds]
-            .map((id) => cityDirectory.byId.get(id))
-            .filter(Boolean);
-
-        if (byNameMatches.length) {
-            const nearestNamed = findNearestCity(lat, lon, byNameMatches) || byNameMatches[0];
-            return {
-                ...nearestNamed,
-                matchMethod: 'name',
-                searchNames: [nearestNamed.he, ...nearestNamed.searchNames].filter(Boolean)
-            };
-        }
-
-        const nearestOverall = findNearestCity(lat, lon, cityDirectory.cities);
-        if (!nearestOverall) return null;
-
-        return {
-            ...nearestOverall,
-            matchMethod: 'distance',
-            searchNames: [nearestOverall.he, ...nearestOverall.searchNames].filter(Boolean)
-        };
-    }
-
-    function findNearestCity(lat, lon, cities) {
-        let winner = null;
-        let winnerDistance = Number.POSITIVE_INFINITY;
-
-        cities.forEach((city) => {
-            if (!Number.isFinite(city.lat) || !Number.isFinite(city.lng)) return;
-            const distance = geoDistanceMeters(lat, lon, city.lat, city.lng);
-            if (distance < winnerDistance) {
-                winnerDistance = distance;
-                winner = city;
-            }
-        });
-
-        return winner;
-    }
-
-    function geoDistanceMeters(lat1, lon1, lat2, lon2) {
-        const toRad = (degrees) => (degrees * Math.PI) / 180;
-        const earthRadius = 6371000;
-        const dLat = toRad(lat2 - lat1);
-        const dLon = toRad(lon2 - lon1);
-        const a = Math.sin(dLat / 2) ** 2
-            + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return earthRadius * c;
-    }
-
-    function buildShelterSessions(relevantAlerts, releaseInstructions, estimateOnly) {
-        return relevantAlerts.map((alert) => {
-            const start = alert.time * 1000;
-            const fallbackEnd = start + ALERT_WINDOW_MS;
-
-            let end = fallbackEnd;
-            let source = 'estimate';
-
-            if (!estimateOnly && alert.matchedCityIds.length) {
-                const releaseTime = findMatchingReleaseTime(
-                    start,
-                    start + RELEASE_LOOKAHEAD_MS,
-                    new Set(alert.matchedCityIds),
-                    releaseInstructions
-                );
-                if (releaseTime !== null) {
-                    end = releaseTime;
-                    source = 'release';
-                }
-            }
-
-            return {
-                start,
-                end: Math.max(end, start + MIN_SESSION_MS),
-                source,
-                cities: alert.matchedCities
-            };
-        });
-    }
-
-    function findMatchingReleaseTime(startMs, endMs, alertCityIdsSet, releaseInstructions) {
-        for (let i = 0; i < releaseInstructions.length; i += 1) {
-            const release = releaseInstructions[i];
-            if (release.timeMs < startMs) continue;
-            if (release.timeMs > endMs) break;
-
-            const isMatch = release.citiesIds.some((cityId) => alertCityIdsSet.has(cityId));
-            if (isMatch) return release.timeMs;
-        }
-
-        return null;
-    }
-
-    function cityMatches(alertCity, candidateCity) {
-        if (!alertCity || !candidateCity) return false;
-        if (alertCity === candidateCity) return true;
-        if (alertCity.includes(candidateCity) || candidateCity.includes(alertCity)) return true;
-
-        const alertParts = alertCity.split(/[-,\/]/).map((part) => part.trim()).filter(Boolean);
-        const candidateParts = candidateCity.split(/[-,\/]/).map((part) => part.trim()).filter(Boolean);
-        return alertParts.some((alertPart) =>
-            candidateParts.some((candidatePart) => alertPart === candidatePart)
-        );
-    }
-
-    function normalizeCity(value) {
-        return String(value || '')
-            .toLowerCase()
-            .normalize('NFKD')
-            .replace(/[\u0591-\u05C7]/g, '')
-            .replace(/[\u2010-\u2015\u2212\u05BE-]+/g, ' ')
-            .replace(/[(),.]/g, ' ')
-            .replace(/[״"'`]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-
-    function computeShelterTotalsFromSessions(sessions) {
-        const nowMs = Date.now();
-        const now = new Date(nowMs);
-        const startOfTodayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        const start24hMs = nowMs - 24 * 60 * 60 * 1000;
-
-        const today = summarizeWindow(sessions, startOfTodayMs, nowMs);
-        const last24h = summarizeWindow(sessions, start24hMs, nowMs);
-
-        return {
-            todayMs: today.totalMs,
-            last24hMs: last24h.totalMs,
-            todayAlerts: sessions.filter((session) => session.start >= startOfTodayMs).length,
-            last24hAlerts: sessions.filter((session) => session.start >= start24hMs).length,
-            avgTodayMs: today.avgVisitMs,
-            avg24hMs: last24h.avgVisitMs,
-            todayVisits: today.visits,
-            last24hVisits: last24h.visits
-        };
-    }
-
-    function summarizeWindow(sessions, windowStart, windowEnd) {
-        const clippedIntervals = sessions
-            .map((session) => [Math.max(session.start, windowStart), Math.min(session.end, windowEnd)])
-            .filter(([start, end]) => end > start)
-            .sort((a, b) => a[0] - b[0]);
-
-        if (!clippedIntervals.length) {
-            return {
-                totalMs: 0,
-                avgVisitMs: 0,
-                visits: 0
-            };
-        }
-
-        const mergedIntervals = mergeIntervals(clippedIntervals);
-        const totalMs = mergedIntervals.reduce((sum, [start, end]) => sum + (end - start), 0);
-
-        return {
-            totalMs,
-            avgVisitMs: totalMs / mergedIntervals.length,
-            visits: mergedIntervals.length
-        };
-    }
-
-    function mergeIntervals(intervals) {
-        if (!intervals.length) return [];
-        const merged = [intervals[0].slice()];
-
-        for (let i = 1; i < intervals.length; i += 1) {
-            const [start, end] = intervals[i];
-            const last = merged[merged.length - 1];
-            if (start <= last[1]) {
-                last[1] = Math.max(last[1], end);
-            } else {
-                merged.push([start, end]);
-            }
-        }
-
-        return merged;
-    }
-
-    function formatDuration(milliseconds) {
-        if (!milliseconds || milliseconds <= 0) return '0m';
-
-        const totalMinutes = Math.round(milliseconds / 60000);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-
-        if (hours === 0) return `${minutes}m`;
-        if (minutes === 0) return `${hours}h`;
-        return `${hours}h ${minutes}m`;
-    }
-
-    async function getCurrentCoords() {
-        if (!navigator.geolocation) {
-            setStatus('Geolocation is not supported in this browser.');
-            return null;
-        }
-
-        try {
-            return await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        resolve({
-                            lat: position.coords.latitude,
-                            lon: position.coords.longitude
-                        });
-                    },
-                    reject,
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 300000
-                    }
-                );
-            });
+            state.personas = personas;
+            setStatus('Select a persona to begin.');
+            renderPersonaCards();
         } catch (error) {
-            setStatus(`Could not get location: ${error.message}`);
-            return null;
+            if (isLocalFileProtocol()) {
+                state.personas = LOCAL_FALLBACK_PERSONAS.slice(0, 3);
+                Object.keys(LOCAL_FALLBACK_PROFILES).forEach((id) => {
+                    state.profileCache.set(id, LOCAL_FALLBACK_PROFILES[id]);
+                });
+                setStatus('Running from file://. Using bundled fallback persona data. Use localhost or GitHub Pages to load JSON files directly.');
+                renderPersonaCards();
+                return;
+            }
+
+            state.personas = [];
+            personaGrid.innerHTML = '<article class="persona-card persona-card-error"><p>Failed to load personas.</p><p>Check data/personas/index.json and refresh.</p></article>';
+            setStatus(`Persona load failed: ${error.message}`);
         }
     }
 
-    async function reverseGeocodeCandidates(lat, lon) {
-        try {
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&accept-language=he,en`,
-                {
-                    headers: {
-                        Accept: 'application/json'
-                    }
-                }
-            );
-            if (!response.ok) return [];
+    function renderPersonaCards() {
+        if (!state.personas.length) return;
 
-            const data = await response.json();
-            const address = data.address || {};
-            const candidates = [
-                address.city,
-                address.town,
-                address.village,
-                address.municipality,
-                address.suburb,
-                address.county
-            ]
-                .filter(Boolean)
-                .map((item) => String(item).trim());
+        personaGrid.innerHTML = '';
 
-            return [...new Set(candidates)];
-        } catch (_error) {
-            return [];
+        state.personas.forEach((persona) => {
+            const card = document.createElement('article');
+            card.className = 'persona-card';
+            card.innerHTML = `
+                <h3>${escapeHtml(persona.displayName)}</h3>
+                <p>${escapeHtml(persona.shortDescription)}</p>
+                <button class="cta-button" type="button" data-persona-id="${escapeHtml(persona.id)}">Use Persona</button>
+            `;
+            card.classList.add('reveal', 'is-visible');
+            personaGrid.appendChild(card);
+        });
+    }
+
+    async function selectPersona(personaId) {
+        const persona = state.personas.find((entry) => entry.id === personaId);
+        if (!persona) {
+            setStatus('Selected persona was not found.');
+            return;
         }
+
+        setStatus(`Loading ${persona.displayName} profile...`);
+
+        try {
+            let profile = state.profileCache.get(persona.id);
+            if (!profile) {
+                const response = await fetch(persona.profilePath, { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`Profile HTTP ${response.status}`);
+                }
+
+                profile = await response.json();
+                state.profileCache.set(persona.id, profile);
+            }
+
+            state.selectedPersona = {
+                ...persona,
+                profile
+            };
+            state.messages = [
+                createMessage('assistant', `You are now chatting as ${persona.displayName}. Share symptoms or concerns, and I will provide initial guidance.`)
+            ];
+            state.lastError = null;
+            state.retryContext = null;
+            state.stickToBottom = true;
+
+            switchView(VIEW_CHAT);
+            setStatus(`${persona.displayName} loaded. Start typing your question.`);
+            render();
+            focusComposer();
+        } catch (error) {
+            setStatus(`Failed to load persona profile: ${error.message}`);
+        }
+    }
+
+    async function sendUserMessage(userMessage) {
+        const messagesBefore = state.messages.slice(-MAX_HISTORY_MESSAGES);
+
+        state.messages.push(createMessage('user', userMessage));
+        state.lastError = null;
+        state.retryContext = {
+            messagesBefore,
+            userMessage
+        };
+        state.isLoading = true;
+        state.stickToBottom = true;
+
+        setStatus('Waiting for assistant reply...');
+        render();
+
+        try {
+            const response = await requestAssistantReply(messagesBefore, userMessage);
+            state.messages.push(createMessage('assistant', response.assistantText));
+            state.lastError = null;
+            state.retryContext = null;
+            setStatus('Reply received.');
+        } catch (error) {
+            state.lastError = {
+                errorCode: error.errorCode || 'CHAT_REQUEST_FAILED',
+                errorMessage: error.errorMessage || 'Could not fetch assistant reply.'
+            };
+            setStatus(`Reply failed: ${state.lastError.errorMessage}`);
+        } finally {
+            state.isLoading = false;
+            render();
+            focusComposer();
+        }
+    }
+
+    async function retryLastMessage() {
+        if (!state.retryContext) return;
+
+        state.lastError = null;
+        state.isLoading = true;
+        state.stickToBottom = true;
+
+        setStatus('Retrying last message...');
+        render();
+
+        try {
+            const response = await requestAssistantReply(
+                state.retryContext.messagesBefore,
+                state.retryContext.userMessage
+            );
+            state.messages.push(createMessage('assistant', response.assistantText));
+            state.lastError = null;
+            state.retryContext = null;
+            setStatus('Reply received.');
+        } catch (error) {
+            state.lastError = {
+                errorCode: error.errorCode || 'CHAT_RETRY_FAILED',
+                errorMessage: error.errorMessage || 'Retry failed.'
+            };
+            setStatus(`Retry failed: ${state.lastError.errorMessage}`);
+        } finally {
+            state.isLoading = false;
+            render();
+            focusComposer();
+        }
+    }
+
+    async function requestAssistantReply(messagesBefore, userMessage) {
+        const chatMode = resolveChatMode();
+        if (chatMode === CHAT_MODE_MOCK) {
+            return requestMockAssistantReply(messagesBefore, userMessage);
+        }
+
+        const endpoint = resolveEndpoint();
+        if (!endpoint || ENDPOINT_PLACEHOLDER_PATTERN.test(endpoint)) {
+            throw {
+                errorCode: 'CONFIG_MISSING_ENDPOINT',
+                errorMessage: 'Set a real Cloudflare Worker URL in shelter.html data-api-endpoint.'
+            };
+        }
+
+        const payload = {
+            personaId: state.selectedPersona.id,
+            personaProfile: state.selectedPersona.profile,
+            messages: normalizeMessages(messagesBefore),
+            userMessage,
+            clientMeta: {
+                page: window.location.pathname,
+                locale: navigator.language,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            }
+        };
+
+        let response;
+        try {
+            response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        } catch (_error) {
+            throw {
+                errorCode: 'NETWORK_ERROR',
+                errorMessage: 'Network request failed before reaching the worker.'
+            };
+        }
+
+        let body = null;
+        try {
+            body = await response.json();
+        } catch (_error) {
+            body = null;
+        }
+
+        if (!response.ok) {
+            throw {
+                errorCode: body?.errorCode || 'WORKER_ERROR',
+                errorMessage: body?.errorMessage || `Worker returned HTTP ${response.status}`
+            };
+        }
+
+        if (!body || typeof body.assistantText !== 'string' || !body.assistantText.trim()) {
+            throw {
+                errorCode: 'INVALID_WORKER_RESPONSE',
+                errorMessage: 'Worker response did not include assistantText.'
+            };
+        }
+
+        return body;
+    }
+
+    async function requestMockAssistantReply(_messagesBefore, userMessage) {
+        const lowerMessage = userMessage.toLowerCase();
+        const personaName = state.selectedPersona?.displayName || 'the selected persona';
+        const bullets = [];
+        let severity = 'routine';
+
+        if (matchesAny(lowerMessage, ['chest pain', 'shortness of breath', 'can\'t breathe', 'faint', 'fainted', 'confusion', 'one-sided weakness', 'slurred speech', 'seizure', 'severe bleeding'])) {
+            severity = 'urgent';
+            bullets.push('This could be urgent. Seek immediate in-person emergency evaluation now.');
+            bullets.push('Do not wait for online advice if symptoms are severe, worsening, or include breathing/chest/neurologic warning signs.');
+        } else if (matchesAny(lowerMessage, ['fever', 'cough', 'sore throat', 'vomit', 'nausea', 'diarrhea', 'headache', 'migraine', 'rash'])) {
+            bullets.push('Track symptom start time, severity, and triggers over the next 24 hours.');
+            bullets.push('Hydrate, rest, and use previously prescribed medications as directed on the label.');
+            bullets.push('Arrange same-day clinic care if symptoms are worsening or not improving.');
+        } else if (matchesAny(lowerMessage, ['asthma', 'wheezing', 'inhaler', 'breath'])) {
+            bullets.push('Use your prescribed rescue inhaler exactly as instructed if active breathing symptoms are present.');
+            bullets.push('Escalate to urgent care quickly if breathing effort increases or rescue medication is not helping.');
+            bullets.push('Document trigger exposure (dust, pollen, exercise, infection) for your clinician.');
+        } else if (matchesAny(lowerMessage, ['diabetes', 'glucose', 'blood sugar', 'insulin', 'hypertension', 'pressure'])) {
+            bullets.push('Check objective readings now (glucose and/or blood pressure if available).');
+            bullets.push('Keep medication schedule unchanged unless a licensed clinician instructs otherwise.');
+            bullets.push('Book prompt follow-up to review trends and adjust treatment safely.');
+        } else {
+            bullets.push('Share when symptoms started, what makes them better/worse, and any measured vitals.');
+            bullets.push('Monitor for progression over the next several hours and avoid delaying care if new warning signs appear.');
+            bullets.push('If uncertain, use urgent-care triage rather than waiting for symptoms to intensify.');
+        }
+
+        const opening = severity === 'urgent'
+            ? `For ${personaName}, this description raises possible red-flag concerns.`
+            : `For ${personaName}, here is initial guidance based on your message.`;
+
+        const assistantText = [
+            `[Mock response] ${opening}`,
+            '',
+            ...bullets.map((item) => `- ${item}`),
+            '',
+            'This is a simulated reply while backend integration is pending and does not replace professional medical evaluation.'
+        ].join('\n');
+
+        await delay(450 + Math.round(Math.random() * 350));
+
+        return {
+            assistantText,
+            requestId: `mock-${Date.now()}`
+        };
+    }
+
+    function switchView(view) {
+        state.view = view;
+        root.dataset.view = view;
+
+        const inChatView = view === VIEW_CHAT;
+        personaSelectSection.hidden = inChatView;
+        changePersonaButton.hidden = !inChatView;
+        chatMessages.hidden = !inChatView;
+        chatEmptyState.hidden = inChatView;
+
+        setComposerDisabled(!inChatView || state.isLoading || !state.selectedPersona);
+    }
+
+    function setComposerDisabled(disabled) {
+        chatInput.disabled = disabled;
+        sendButton.disabled = disabled;
+    }
+
+    function render() {
+        const inChatView = state.view === VIEW_CHAT;
+        switchView(state.view);
+
+        if (!state.selectedPersona) {
+            summaryNode.textContent = 'No persona selected yet.';
+        } else {
+            summaryNode.textContent = `${state.selectedPersona.displayName}: ${state.selectedPersona.shortDescription}`;
+        }
+
+        renderError();
+
+        if (!inChatView) {
+            return;
+        }
+
+        chatMessages.innerHTML = '';
+
+        state.messages.forEach((message) => {
+            const node = document.createElement('article');
+            node.className = `chat-message ${message.role === 'user' ? 'chat-message-user' : 'chat-message-assistant'}`;
+            node.innerHTML = `
+                <p class="chat-role">${message.role === 'user' ? 'You' : 'Assistant'}</p>
+                <p class="chat-text"></p>
+            `;
+            const textNode = node.querySelector('.chat-text');
+            textNode.textContent = message.text;
+            chatMessages.appendChild(node);
+        });
+
+        if (state.isLoading) {
+            const typingNode = document.createElement('article');
+            typingNode.className = 'chat-message chat-message-assistant chat-message-typing';
+            typingNode.innerHTML = `
+                <p class="chat-role">Assistant</p>
+                <p class="chat-text"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></p>
+            `;
+            chatMessages.appendChild(typingNode);
+        }
+
+        scrollMessagesToBottom();
+        setComposerDisabled(state.isLoading || !state.selectedPersona);
+    }
+
+    function renderError() {
+        if (!state.lastError) {
+            chatError.hidden = true;
+            chatErrorText.textContent = '';
+            return;
+        }
+
+        chatError.hidden = false;
+        chatErrorText.textContent = `${state.lastError.errorCode}: ${state.lastError.errorMessage}`;
+    }
+
+    function scrollMessagesToBottom() {
+        if (!state.stickToBottom) return;
+
+        window.requestAnimationFrame(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    }
+
+    function focusComposer() {
+        if (state.view !== VIEW_CHAT || state.isLoading || !state.selectedPersona) return;
+        chatInput.focus({ preventScroll: true });
+    }
+
+    function autoSizeInput() {
+        chatInput.style.height = 'auto';
+        const maxHeight = 180;
+        const nextHeight = Math.min(chatInput.scrollHeight, maxHeight);
+        chatInput.style.height = `${Math.max(nextHeight, 44)}px`;
+        chatInput.style.overflowY = chatInput.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    }
+
+    function setupKeyboardViewportTracking() {
+        if (!window.visualViewport) return;
+
+        const updateViewportInsets = () => {
+            const keyboardOffset = Math.max(
+                0,
+                window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop
+            );
+            root.style.setProperty('--keyboard-offset', `${keyboardOffset}px`);
+        };
+
+        window.visualViewport.addEventListener('resize', updateViewportInsets);
+        window.visualViewport.addEventListener('scroll', updateViewportInsets);
+        updateViewportInsets();
+    }
+
+    function setStatus(text) {
+        statusNode.textContent = text;
+    }
+
+    function resolveEndpoint() {
+        const fromWindow = typeof window.MEDICAL_CHAT_ENDPOINT === 'string'
+            ? window.MEDICAL_CHAT_ENDPOINT.trim()
+            : '';
+
+        if (fromWindow) return fromWindow;
+        return (root.dataset.apiEndpoint || '').trim();
+    }
+
+    function resolveChatMode() {
+        const fromWindow = typeof window.MEDICAL_CHAT_MODE === 'string'
+            ? window.MEDICAL_CHAT_MODE.trim().toLowerCase()
+            : '';
+        if (fromWindow === CHAT_MODE_MOCK || fromWindow === CHAT_MODE_LIVE) {
+            return fromWindow;
+        }
+
+        const fromData = (root.dataset.chatMode || '').trim().toLowerCase();
+        if (fromData === CHAT_MODE_MOCK || fromData === CHAT_MODE_LIVE) {
+            return fromData;
+        }
+
+        return CHAT_MODE_LIVE;
+    }
+
+    function matchesAny(text, keywords) {
+        return keywords.some((keyword) => text.includes(keyword));
+    }
+
+    function delay(milliseconds) {
+        return new Promise((resolve) => {
+            window.setTimeout(resolve, milliseconds);
+        });
+    }
+
+    function isLocalFileProtocol() {
+        return window.location.protocol === 'file:';
+    }
+
+    function normalizeMessages(messages) {
+        if (!Array.isArray(messages)) return [];
+
+        return messages
+            .filter((message) =>
+                message &&
+                (message.role === 'user' || message.role === 'assistant') &&
+                typeof message.text === 'string' &&
+                message.text.trim()
+            )
+            .slice(-MAX_HISTORY_MESSAGES)
+            .map((message) => ({
+                role: message.role,
+                content: message.text.trim()
+            }));
+    }
+
+    function createMessage(role, text) {
+        return {
+            id: createId(),
+            role,
+            text,
+            timestamp: Date.now()
+        };
+    }
+
+    function createId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+        return `msg-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 }

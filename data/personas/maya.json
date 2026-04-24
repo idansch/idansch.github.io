@@ -1,0 +1,112 @@
+{
+  "personaId": "maya",
+  "demographics": {
+    "age": 31,
+    "sex": "female",
+    "height_cm": 165,
+    "weight_kg": 60,
+    "bmi": 22,
+    "occupation": "product designer",
+    "location": "Tel Aviv"
+  },
+  "medicalHistory": {
+    "conditions": [
+      "episodic migraine",
+      "mild anxiety",
+      "insomnia (stress-related)"
+    ],
+    "allergies": [
+      "penicillin"
+    ],
+    "medications": [
+      "sumatriptan as needed",
+      "occasional ibuprofen",
+      "melatonin as needed"
+    ],
+    "relevantNotes": "Reports increased migraine frequency during stressful work sprints and reduced sleep quality over the past month."
+  },
+  "clinicalContext": {
+    "knownCondition": "migraine flare with stress-sleep interaction",
+    "severity": "mild_to_moderate",
+    "generatedAt": "2026-04-24"
+  },
+  "labResults": {
+    "inflammation": {
+      "crp_mg_l": {
+        "value": 2.1,
+        "status": "normal"
+      },
+      "esr_mm_hr": {
+        "value": 14,
+        "status": "normal"
+      }
+    },
+    "cbc": {
+      "hemoglobin_g_dl": {
+        "value": 12.6,
+        "status": "normal"
+      },
+      "wbc_k_ul": {
+        "value": 7.4,
+        "status": "normal"
+      }
+    },
+    "metabolic": {
+      "glucose_mg_dl": {
+        "value": 91,
+        "status": "normal"
+      },
+      "hba1c_percent": {
+        "value": 5.3,
+        "status": "normal"
+      }
+    },
+    "nutritional": {
+      "vitamin_d_ng_ml": {
+        "value": 24,
+        "status": "borderline_low"
+      },
+      "vitamin_b12_pg_ml": {
+        "value": 345,
+        "status": "normal"
+      }
+    }
+  },
+  "agentAnalysis": {
+    "primaryPattern": "stress-triggered migraine burden",
+    "secondaryPatterns": [
+      "sleep_deprivation",
+      "screen_exposure_trigger",
+      "anxiety_amplification"
+    ],
+    "systemImpacts": {
+      "neurologic": "moderate",
+      "sleep_regulation": "moderate",
+      "mental_health": "mild_to_moderate"
+    }
+  },
+  "recommendations": {
+    "urgency": "outpatient_followup_if_pattern_worsens",
+    "suggestedTests": [
+      "headache_diary_tracking",
+      "blood_pressure_log_during_episodes",
+      "sleep_duration_tracking",
+      "followup_neurology_if_frequency_increases"
+    ],
+    "redFlags": [
+      "sudden_worst_headache",
+      "neurologic_deficit",
+      "persistent_vomiting",
+      "vision_loss",
+      "confusion"
+    ]
+  },
+  "currentContext": {
+    "goal": "Get initial guidance for headache episodes and identify warning signs that should trigger urgent care.",
+    "constraints": "Prefers concise actionable steps and avoids sedating medication during work hours."
+  },
+  "toneGuidance": {
+    "preferredTone": "clear and calm",
+    "format": "short bullet points with a brief summary"
+  }
+}
