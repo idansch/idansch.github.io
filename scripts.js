@@ -126,6 +126,8 @@ function initShelterPage() {
     const VIEW_CHAT = 'chat';
     const CHAT_MODE_MOCK = 'mock';
     const CHAT_MODE_LIVE = 'live';
+    const BACKEND_WORKER = 'worker';
+    const BACKEND_PROMPT_API = 'prompt_api';
     const ENDPOINT_PLACEHOLDER_PATTERN = /(YOUR-WORKER-URL|example\.workers\.dev)/i;
     const MAX_HISTORY_MESSAGES = 30;
     const LOCAL_FALLBACK_PERSONAS = [
@@ -624,6 +626,11 @@ function initShelterPage() {
             return requestMockAssistantReply(messagesBefore, userMessage);
         }
 
+        const backendType = resolveBackendType();
+        if (backendType === BACKEND_PROMPT_API) {
+            return requestPromptApiReply(messagesBefore, userMessage);
+        }
+
         const endpoint = resolveEndpoint();
         if (!endpoint || ENDPOINT_PLACEHOLDER_PATTERN.test(endpoint)) {
             throw {
@@ -683,6 +690,75 @@ function initShelterPage() {
         }
 
         return body;
+    }
+
+    async function requestPromptApiReply(messagesBefore, userMessage) {
+        const endpoint = resolveEndpoint();
+        if (!endpoint) {
+            throw {
+                errorCode: 'CONFIG_MISSING_ENDPOINT',
+                errorMessage: 'Missing live endpoint for prompt API.'
+            };
+        }
+
+        const securityKey = resolveSecurityKey();
+        if (!securityKey) {
+            throw {
+                errorCode: 'CONFIG_MISSING_SECURITY_KEY',
+                errorMessage: 'Missing X-Security-Key for prompt API.'
+            };
+        }
+
+        const prompt = buildPromptApiRequest(messagesBefore, userMessage);
+        let response;
+        try {
+            response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Security-Key': securityKey
+                },
+                body: JSON.stringify({ prompt })
+            });
+        } catch (_error) {
+            throw {
+                errorCode: 'NETWORK_ERROR',
+                errorMessage: 'Network request failed before reaching the prompt API.'
+            };
+        }
+
+        let assistantText = '';
+        let responseBody = null;
+
+        try {
+            responseBody = await response.json();
+            assistantText = extractPromptApiAssistantText(responseBody);
+        } catch (_error) {
+            try {
+                const fallbackText = await response.text();
+                assistantText = String(fallbackText || '').trim();
+            } catch (_error2) {
+                assistantText = '';
+            }
+        }
+
+        if (!response.ok) {
+            throw {
+                errorCode: 'PROMPT_API_ERROR',
+                errorMessage: responseBody?.errorMessage || responseBody?.message || `Prompt API returned HTTP ${response.status}`
+            };
+        }
+
+        if (!assistantText) {
+            throw {
+                errorCode: 'INVALID_PROMPT_API_RESPONSE',
+                errorMessage: 'Prompt API returned an empty reply.'
+            };
+        }
+
+        return {
+            assistantText
+        };
     }
 
     async function requestMockAssistantReply(_messagesBefore, userMessage) {
@@ -854,6 +930,76 @@ function initShelterPage() {
 
         if (fromWindow) return fromWindow;
         return (root.dataset.apiEndpoint || '').trim();
+    }
+
+    function resolveBackendType() {
+        const fromWindow = typeof window.MEDICAL_CHAT_BACKEND === 'string'
+            ? window.MEDICAL_CHAT_BACKEND.trim().toLowerCase()
+            : '';
+        if (fromWindow === BACKEND_PROMPT_API || fromWindow === BACKEND_WORKER) {
+            return fromWindow;
+        }
+
+        const fromData = (root.dataset.backendType || '').trim().toLowerCase();
+        if (fromData === BACKEND_PROMPT_API || fromData === BACKEND_WORKER) {
+            return fromData;
+        }
+
+        return BACKEND_WORKER;
+    }
+
+    function resolveSecurityKey() {
+        const fromWindow = typeof window.MEDICAL_CHAT_SECURITY_KEY === 'string'
+            ? window.MEDICAL_CHAT_SECURITY_KEY.trim()
+            : '';
+        if (fromWindow) return fromWindow;
+        return (root.dataset.securityKey || '').trim();
+    }
+
+    function buildPromptApiRequest(messagesBefore, userMessage) {
+        const personaName = state.selectedPersona?.displayName || 'Selected persona';
+        const profile = state.selectedPersona?.profile || {};
+        const history = normalizeMessages(messagesBefore)
+            .map((message) => `${message.role === 'assistant' ? 'Assistant' : 'User'}: ${message.content}`)
+            .join('\n');
+
+        return [
+            `Persona: ${personaName}`,
+            `Persona profile JSON: ${JSON.stringify(profile)}`,
+            'You provide initial medical guidance only. Avoid definitive diagnosis. Mention urgent care when red flags appear.',
+            history ? `Conversation so far:\n${history}` : 'Conversation so far: (none)',
+            `User: ${userMessage}`,
+            'Assistant:'
+        ].join('\n\n');
+    }
+
+    function extractPromptApiAssistantText(body) {
+        if (!body) return '';
+        if (typeof body === 'string') return body.trim();
+        if (typeof body.assistantText === 'string' && body.assistantText.trim()) return body.assistantText.trim();
+        if (typeof body.reply === 'string' && body.reply.trim()) return body.reply.trim();
+        if (typeof body.message === 'string' && body.message.trim()) return body.message.trim();
+        if (typeof body.response === 'string' && body.response.trim()) return body.response.trim();
+        if (typeof body.text === 'string' && body.text.trim()) return body.text.trim();
+
+        const nestedOutput = body.output;
+        if (typeof nestedOutput === 'string' && nestedOutput.trim()) return nestedOutput.trim();
+
+        if (Array.isArray(nestedOutput)) {
+            const merged = nestedOutput
+                .map((item) => {
+                    if (typeof item === 'string') return item;
+                    if (typeof item?.text === 'string') return item.text;
+                    if (typeof item?.content === 'string') return item.content;
+                    return '';
+                })
+                .filter(Boolean)
+                .join('\n')
+                .trim();
+            if (merged) return merged;
+        }
+
+        return '';
     }
 
     function resolveChatMode() {
