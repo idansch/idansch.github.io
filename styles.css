@@ -652,6 +652,23 @@ a {
     gap: 0.7rem;
 }
 
+.patient-card {
+    margin-top: 0.9rem;
+    text-align: left;
+    padding: 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(2, 9, 19, 0.44);
+}
+
+.patient-card h2 {
+    margin-bottom: 0.45rem;
+}
+
+.patient-card p {
+    margin: 0.28rem 0;
+}
+
 .shelter-status {
     margin: 0;
     color: #e9efff;
@@ -867,6 +884,69 @@ a {
     min-width: 92px;
 }
 
+.chat-composer-static .complaint-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.56rem;
+    align-items: stretch;
+}
+
+.composer-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+    min-width: 164px;
+}
+
+.chat-composer-static textarea[readonly] {
+    opacity: 0.95;
+    cursor: not-allowed;
+}
+
+.attachment-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.attachment-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(78, 112, 255, 0.2);
+    color: #eaf1ff;
+    font-size: 0.85rem;
+    padding: 0.28rem 0.64rem;
+}
+
+.bubble-attachment {
+    margin-top: 0.62rem;
+}
+
+.chat-message-user .bubble-attachment {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.chat-message-user .attachment-pill {
+    background: rgba(36, 51, 130, 0.46);
+    border-color: rgba(174, 201, 255, 0.35);
+}
+
+.restart-section {
+    margin-top: 0.35rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.restart-section .secondary-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 .sr-only {
     position: absolute;
     width: 1px;
@@ -880,10 +960,6 @@ a {
 }
 
 @media (max-width: 760px) {
-    .persona-grid {
-        grid-template-columns: 1fr;
-    }
-
     .chat-panel {
         min-height: min(72vh, 740px);
     }
@@ -892,7 +968,27 @@ a {
         grid-template-columns: 1fr;
     }
 
+    .chat-composer-static .complaint-row {
+        grid-template-columns: 1fr;
+    }
+
+    .composer-actions {
+        min-width: 0;
+    }
+
     .chat-composer .cta-button {
+        width: 100%;
+    }
+
+    .attachment-row {
+        justify-content: flex-start;
+    }
+
+    .restart-section {
+        justify-content: stretch;
+    }
+
+    .restart-section .secondary-button {
         width: 100%;
     }
 }

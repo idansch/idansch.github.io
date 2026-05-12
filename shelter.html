@@ -4,51 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Intake Chat MVP - IYS Apps</title>
-    <meta name="description" content="Temporary persona-first medical intake chat MVP.">
+    <meta name="description" content="Temporary scripted medical chat mock experience.">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
-    <main class="container shelter-page medical-chat-page" id="shelter-app" data-chat-mode="live" data-backend-type="prompt_api" data-api-endpoint="https://pulled-looks-roughly-smallest.trycloudflare.com/v1/ai/chat" data-security-key="idan8897TestKey">
+    <main class="container shelter-page medical-chat-page" id="shelter-app">
         <section class="header medical-hero">
             <p class="shelter-kicker">Temporary MVP</p>
             <h1>Medical Intake Chat</h1>
-            <p class="medical-subtitle">Choose a simulated persona, then start a chat for initial medical guidance.</p>
-            <p class="medical-disclaimer" role="note">This assistant is for informational support only and is not a diagnosis tool.</p>
+            <p class="medical-subtitle">Scripted conversation experience for demo/testing purposes only.</p>
+            <p class="medical-disclaimer" role="note">This is a simulated example and not a diagnosis tool.</p>
 
-            <div class="persona-current" id="selected-persona-summary">No persona selected yet.</div>
+            <article class="patient-card" aria-label="Patient background">
+                <h2>Default Patient</h2>
+                <p><strong>Age:</strong> 92</p>
+                <p><strong>Sex:</strong> Female</p>
+                <p><strong>Background & Conditions:</strong> Blood pressure medication, history of iron deficiency, functional decline.</p>
+            </article>
 
             <div class="medical-status-row">
-                <p id="medical-status" class="shelter-status" role="status" aria-live="polite">Loading personas...</p>
-                <button id="change-persona-button" class="secondary-button" type="button" hidden>Change Persona</button>
+                <p id="medical-status" class="shelter-status" role="status" aria-live="polite">Ready to send scripted complaint.</p>
             </div>
         </section>
 
-        <section class="persona-grid-section" id="persona-select-section" aria-label="Persona selection">
-            <h2>Select a Persona</h2>
-            <div id="persona-grid" class="persona-grid">
-                <article class="persona-card persona-card-placeholder" aria-hidden="true">
-                    <p>Loading personas...</p>
-                </article>
-            </div>
-        </section>
+        <section class="main-content chat-panel" aria-label="Mock chat interface">
+            <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
 
-        <section class="main-content chat-panel" aria-label="Chat interface">
-            <div id="chat-empty-state" class="chat-empty-state">Select a persona to unlock the chat.</div>
-
-            <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text" hidden></div>
-
-            <div id="chat-error" class="chat-error" hidden>
-                <p id="chat-error-text"></p>
-                <button id="retry-button" class="secondary-button" type="button">Retry Last Message</button>
-            </div>
-
-            <form id="chat-form" class="chat-composer" novalidate>
-                <label for="chat-input" class="sr-only">Message</label>
-                <textarea id="chat-input" rows="1" maxlength="2000" placeholder="Describe symptoms, concerns, or questions..."></textarea>
-                <button id="send-button" class="cta-button" type="submit">Send</button>
+            <form id="chat-form" class="chat-composer chat-composer-static" novalidate>
+                <div class="complaint-row">
+                    <label for="chat-input" class="sr-only">Patient complaints</label>
+                    <textarea id="chat-input" rows="3" readonly>I recently got significant weakness, difficulty walking, nausea and a mildly elevated blood pressure.
+I'm worried about my health and want to know what to do next.</textarea>
+                    <div class="composer-actions">
+                        <button id="send-button" class="cta-button" type="submit">Send</button>
+                        <div class="attachment-row" aria-label="Attachment preview">
+                            <span class="attachment-pill" aria-hidden="true">📎 testResults.pdf</span>
+                        </div>
+                    </div>
+                </div>
             </form>
+
+            <section id="restart-section" class="restart-section" hidden>
+                <button id="restart-button" class="secondary-button" type="button" disabled>Restart</button>
+            </section>
         </section>
     </main>
 
