@@ -2,14 +2,43 @@ function sendSupportEmail() {
     window.location.href = 'mailto:support@isapps.app';
 }
 
+function resolveCurrentPath() {
+    const cleanedPath = window.location.pathname.replace(/\/+$/, '');
+    if (!cleanedPath) return 'index.html';
+
+    const parts = cleanedPath.split('/').filter(Boolean);
+    if (window.location.protocol === 'file:') {
+        const tail = parts.slice(-2).join('/');
+        if (tail === 'vs/index.html') return 'vs/index.html';
+        return parts[parts.length - 1] || 'index.html';
+    }
+
+    const normalizedPath = cleanedPath.replace(/^\/+/, '');
+    return normalizedPath || 'index.html';
+}
+
+function initPageContext() {
+    if (document.body.dataset.pageContextReady === 'true') return;
+
+    const currentPath = resolveCurrentPath();
+    const pageClass = currentPath.replace('.html', '').replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+
+    document.body.dataset.page = currentPath;
+    document.body.classList.add(`${pageClass || 'index'}-page`);
+
+    if (currentPath === 'index.html') {
+        document.body.classList.add('home-page', 'has-floating-dock');
+    }
+
+    document.body.dataset.pageContextReady = 'true';
+}
+
 function initNavigation() {
     const navbar = document.querySelector('.navbar');
     if (!navbar || navbar.dataset.initialized === 'true') return;
 
     const toggle = navbar.querySelector('.mobile-nav-toggle');
     const navLinks = navbar.querySelector('.nav-links');
-    const dropdown = navbar.querySelector('.dropdown');
-    const dropdownAnchor = dropdown ? dropdown.querySelector(':scope > a') : null;
 
     if (toggle && navLinks) {
         toggle.addEventListener('click', () => {
@@ -18,16 +47,7 @@ function initNavigation() {
         });
     }
 
-    if (dropdown && dropdownAnchor) {
-        dropdownAnchor.addEventListener('click', (event) => {
-            if (window.matchMedia('(max-width: 880px)').matches) {
-                event.preventDefault();
-                dropdown.classList.toggle('open');
-            }
-        });
-    }
-
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const currentPath = resolveCurrentPath();
     navbar.querySelectorAll('.nav-links a[href]').forEach((link) => {
         const href = link.getAttribute('href');
         if (!href || href === '#') return;
@@ -38,11 +58,27 @@ function initNavigation() {
         if (!navbar.contains(event.target) && navLinks) {
             navLinks.classList.remove('open');
             if (toggle) toggle.setAttribute('aria-expanded', 'false');
-            if (dropdown) dropdown.classList.remove('open');
         }
     });
 
     navbar.dataset.initialized = 'true';
+}
+
+function initNavbarDepth() {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar || navbar.dataset.depthReady === 'true') return;
+
+    const onScroll = () => {
+        if (window.scrollY > 14) {
+            document.body.classList.add('is-scrolled');
+        } else {
+            document.body.classList.remove('is-scrolled');
+        }
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    navbar.dataset.depthReady = 'true';
 }
 
 function initRevealAnimations() {
@@ -63,7 +99,10 @@ function initRevealAnimations() {
     ];
 
     const revealNodes = document.querySelectorAll(selectors.join(','));
-    revealNodes.forEach((node) => node.classList.add('reveal'));
+    revealNodes.forEach((node, index) => {
+        node.classList.add('reveal');
+        node.style.setProperty('--reveal-delay', `${Math.min(index * 36, 240)}ms`);
+    });
 
     const observer = new IntersectionObserver(
         (entries) => {
@@ -108,10 +147,104 @@ function initDepthEffects() {
     document.body.dataset.depthInitialized = 'true';
 }
 
+function initTiltMotion() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (document.body.dataset.tiltInitialized === 'true') return;
+
+    const cards = document.querySelectorAll('.story-collapse, .app-detail, .invite-section, .patient-card');
+    cards.forEach((card) => {
+        card.addEventListener('pointermove', (event) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) - 0.5;
+            const y = ((event.clientY - rect.top) / rect.height) - 0.5;
+            card.style.setProperty('--tilt-x', `${(x * 5).toFixed(2)}deg`);
+            card.style.setProperty('--tilt-y', `${(-y * 5).toFixed(2)}deg`);
+        });
+
+        card.addEventListener('pointerleave', () => {
+            card.style.removeProperty('--tilt-x');
+            card.style.removeProperty('--tilt-y');
+        });
+    });
+
+    document.body.dataset.tiltInitialized = 'true';
+}
+
+function initHomeHeroEffects() {
+    if (!document.body.classList.contains('home-page')) return;
+    const hero = document.querySelector('.hero-content');
+    if (!hero || hero.dataset.initialized === 'true') return;
+
+    hero.addEventListener('pointermove', (event) => {
+        const rect = hero.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 100;
+        const y = ((event.clientY - rect.top) / rect.height) * 100;
+        hero.style.setProperty('--hero-x', `${x}%`);
+        hero.style.setProperty('--hero-y', `${y}%`);
+    });
+
+    hero.addEventListener('pointerleave', () => {
+        hero.style.removeProperty('--hero-x');
+        hero.style.removeProperty('--hero-y');
+    });
+
+    hero.dataset.initialized = 'true';
+}
+
+function initFloatingDock() {
+    const dock = document.querySelector('.floating-app-dock');
+    if (!dock || dock.dataset.initialized === 'true') return;
+
+    const currentPath = resolveCurrentPath();
+    const dockItems = Array.from(dock.querySelectorAll('.dock-item[data-dock-target]'));
+
+    dockItems.forEach((item) => {
+        if (item.dataset.dockTarget === currentPath) {
+            item.classList.add('is-active');
+        }
+
+        item.addEventListener('pointermove', (event) => {
+            const rect = item.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+            item.style.setProperty('--dock-x', `${x}%`);
+            item.style.setProperty('--dock-y', `${y}%`);
+        });
+
+        item.addEventListener('pointerleave', () => {
+            item.style.removeProperty('--dock-x');
+            item.style.removeProperty('--dock-y');
+        });
+    });
+
+    dock.addEventListener('pointermove', (event) => {
+        const dockRect = dock.getBoundingClientRect();
+        const px = event.clientX - dockRect.left;
+        dockItems.forEach((item) => {
+            const rect = item.getBoundingClientRect();
+            const centerX = rect.left - dockRect.left + rect.width / 2;
+            const distance = Math.abs(px - centerX);
+            const scale = Math.max(1, 1.14 - distance / 260);
+            item.style.setProperty('--dock-scale', scale.toFixed(3));
+        });
+    });
+
+    dock.addEventListener('pointerleave', () => {
+        dockItems.forEach((item) => item.style.removeProperty('--dock-scale'));
+    });
+
+    dock.dataset.initialized = 'true';
+}
+
 function initializeSiteInteractions() {
+    initPageContext();
     initNavigation();
+    initNavbarDepth();
     initRevealAnimations();
     initDepthEffects();
+    initTiltMotion();
+    initHomeHeroEffects();
+    initFloatingDock();
     initShelterPage();
 }
 

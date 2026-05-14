@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="header-placeholder"></div>
-
     <main class="container shelter-page medical-chat-page" id="shelter-app">
         <section class="header medical-hero">
             <p class="shelter-kicker">Temporary MVP</p>
@@ -57,15 +55,5 @@ I'm worried about my health and want to know what to do next.</textarea>
     </footer>
 
     <script src="scripts.js"></script>
-    <script>
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                if (window.initializeSiteInteractions) {
-                    window.initializeSiteInteractions();
-                }
-            });
-    </script>
 </body>
 </html>
