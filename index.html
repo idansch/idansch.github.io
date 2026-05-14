@@ -14,11 +14,17 @@
         <div class="hero-content container">
             <div class="hero-shell">
                 <div class="hero-copy">
+                    <span class="eyebrow">Independent mobile studio</span>
                     <h1>IYS Apps</h1>
                     <p>Innovating mobile experiences, bit by bit.</p>
                     <div class="hero-actions">
                         <a href="echo.html" class="cta-button">Explore Our Apps</a>
                         <button class="support-button" onclick="sendSupportEmail()">Support / Feedback</button>
+                    </div>
+                    <div class="hero-highlights" aria-label="IYS Apps highlights">
+                        <span>Playful utility</span>
+                        <span>Privacy-minded</span>
+                        <span>Crafted solo</span>
                     </div>
                 </div>
                 <div class="hero-stage" aria-hidden="true">
@@ -36,6 +42,33 @@
         </div>
     </header>
 
+    <main>
+        <section class="apps-showcase container" aria-labelledby="apps-title">
+            <div class="section-heading">
+                <span class="eyebrow">Featured apps</span>
+                <h2 id="apps-title">Small apps with a polished feel.</h2>
+                <p>Explore focused mobile experiences from IYS Apps, built with care and personality.</p>
+            </div>
+            <div class="app-card-grid">
+                <a class="app-card echo-card" href="echo.html">
+                    <img src="images/echo-logo.png" alt="Echo app icon" class="app-card-icon">
+                    <div>
+                        <span class="app-card-kicker">Rhythm game</span>
+                        <h3>Echo</h3>
+                        <p>A colorful rhythm experience designed to feel quick, social, and delightful.</p>
+                    </div>
+                </a>
+                <a class="app-card boop-card" href="boop.html">
+                    <img src="images/boop-logo.png" alt="Boop app icon" class="app-card-icon">
+                    <div>
+                        <span class="app-card-kicker">Social app</span>
+                        <h3>Boop</h3>
+                        <p>A playful way to connect, share moments, and keep interactions light.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
     <section class="story-section container">
         <details class="story-collapse">
             <summary>The Story</summary>
@@ -44,6 +77,7 @@
             </div>
         </details>
     </section>
+    </main>
 
     <footer class="footer">
         <p>© 2025 IYS Apps. All Rights Reserved.</p>

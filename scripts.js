@@ -86,6 +86,8 @@ function initRevealAnimations() {
 
     const selectors = [
         '.hero-content > *',
+        '.section-heading',
+        '.app-card',
         '.story-section',
         '.app-detail > *',
         '.policy-section',
