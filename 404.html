@@ -30,6 +30,11 @@
           }
         }
 
+        if (path.indexOf("/labinsight") !== -1) {
+          window.location.href = "labInsight.html";
+          return;
+        }
+
         // fallback: stay on this 404 page and show a button
       })();
     </script>
