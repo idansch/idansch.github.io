@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pit.Kit - IS Apps</title>
+    <meta name="description" content="Pit.Kit private, chat-native notes app by IS Apps.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #46a8aa;
+            --secondary-color: #164a55;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="app-detail container">
+        <h2>Pit.Kit</h2>
+        <img src="images/pitkit-logo.png" alt="Notty, the Pit.Kit assistant" class="app-logo pitkit-logo">
+        <p>Pit.Kit is a private, chat-native space to capture thoughts quickly and follow through when it matters.</p>
+
+        <h3 class="section-title">Capture, then follow through</h3>
+        <ul>
+            <li>Keep ideas, notes, media, and documents together in focused chats.</li>
+            <li>Turn a thought into a reminder when you are ready, with quick actions for the moments in between.</li>
+            <li>Ask Notty for private help and grounded recall from the conversation you are already having.</li>
+        </ul>
+
+        <p>Your notes stay local first, with optional private iCloud sync and recovery backups.</p>
+        <p>
+            <span class="cta-button disabled-link" aria-disabled="true">Coming soon!</span>
+        </p>
+        <p class="app-legal-links"><a href="pitkit-privacy.html">Privacy Policy</a><span aria-hidden="true">·</span><a href="pitkit-terms.html">Terms of Service</a></p>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 IS Apps. All Rights Reserved.</p>
+    </footer>
+    <script src="scripts.js"></script>
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                if (window.initializeSiteInteractions) {
+                    window.initializeSiteInteractions();
+                }
+            });
+    </script>
+</body>
+
+</html>
