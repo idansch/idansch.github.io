@@ -153,7 +153,7 @@ function initTiltMotion() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (document.body.dataset.tiltInitialized === 'true') return;
 
-    const cards = document.querySelectorAll('.story-collapse, .app-detail, .invite-section, .patient-card');
+    const cards = document.querySelectorAll('.story-collapse, .app-detail:not(.pitkit-hub), .invite-section, .patient-card');
     cards.forEach((card) => {
         card.addEventListener('pointermove', (event) => {
             const rect = card.getBoundingClientRect();
