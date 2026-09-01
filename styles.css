@@ -993,8 +993,8 @@ a {
 
 .pitkit-intro-copy,
 .pitkit-section-heading,
-.pitkit-privacy-panel > div,
-.pitkit-support-card > div {
+.pitkit-privacy-panel>div,
+.pitkit-support-card>div {
     position: relative;
     z-index: 1;
 }
@@ -1097,8 +1097,15 @@ a {
 }
 
 @keyframes pitkitPulse {
-    from { transform: scale(0.94); opacity: 0.7; }
-    to { transform: scale(1.06); opacity: 1; }
+    from {
+        transform: scale(0.94);
+        opacity: 0.7;
+    }
+
+    to {
+        transform: scale(1.06);
+        opacity: 1;
+    }
 }
 
 .pitkit-info-section,
@@ -1108,6 +1115,11 @@ a {
     border: 1px solid rgba(195, 239, 229, 0.16);
     border-radius: calc(var(--radius-lg) - 2px);
     background: rgba(5, 33, 38, 0.18);
+    overflow: hidden;
+    text-decoration: none;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .pitkit-info-section {
@@ -1120,8 +1132,8 @@ a {
     margin-bottom: 0.42rem;
 }
 
-.pitkit-section-heading > p:last-child,
-.pitkit-privacy-panel > p,
+.pitkit-section-heading>p:last-child,
+.pitkit-privacy-panel>p,
 .pitkit-support-card p {
     max-width: 63ch;
     margin-bottom: 0;
