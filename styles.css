@@ -28,6 +28,8 @@
 
 html {
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -41,8 +43,21 @@ body {
         radial-gradient(circle at 90% 5%, color-mix(in srgb, var(--secondary-color) 65%, #150d2f), transparent 52%),
         linear-gradient(145deg, #090c16, #0a1221 45%, #0f1324);
     line-height: 1.65;
+    max-width: 100%;
     overflow-x: hidden;
     isolation: isolate;
+}
+
+/*
+ * Keep decorative glows and off-card effects from becoming scrollable width on
+ * Safari. Applying this at the root prevents the iOS viewport from panning
+ * sideways while preserving normal vertical document scrolling.
+ */
+@supports (overflow: clip) {
+    html,
+    body {
+        overflow-x: clip;
+    }
 }
 
 body::before,
@@ -471,18 +486,19 @@ a {
 }
 
 .hero-stage-logo-echo {
-    left: 16%;
-    top: 14%;
-    --phone-tilt: -11deg;
-    z-index: 3;
+    left: 14%;
+    bottom: 10%;
+    --phone-tilt: -10deg;
+    animation-delay: 0.6s;
+    z-index: 2;
 }
 
-.hero-stage-logo-boop {
-    right: 12%;
-    bottom: 10%;
+.hero-stage-logo-pitkit {
+    right: 13%;
+    top: 11%;
     --phone-tilt: 9deg;
-    animation-delay: 0.8s;
-    z-index: 2;
+    z-index: 3;
+    box-shadow: 0 22px 34px rgba(0, 0, 0, 0.48), 0 0 38px rgba(70, 168, 170, 0.4);
 }
 
 @keyframes beamShiftA {
