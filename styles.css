@@ -3045,6 +3045,25 @@ body.pitkit-page::after {
     transform: translateY(-1px);
 }
 
+.pitkit-peerpush-badge {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.pitkit-peerpush-badge img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+.pitkit-peerpush-badge:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
 .pitkit-page .secondary-button {
     min-height: 44px;
     border-color: #d2d2d7;
@@ -3353,6 +3372,14 @@ body.pitkit-page::after {
 
     .pitkit-app-store-badge {
         width: 158px;
+    }
+
+    .pitkit-peerpush-badge {
+        max-width: 100%;
+    }
+
+    .pitkit-peerpush-badge img {
+        max-width: min(230px, 100%);
     }
 
     .pitkit-page .pitkit-logo-frame {
